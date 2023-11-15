@@ -1,0 +1,8 @@
+{
+	"useTabs": true,
+	"singleQuote": true,
+	"trailingComma": "none",
+	"printWidth": 175,
+	"pluginSearchDirs": ["."],
+	"prettier.eslintIntegration": true
+}
