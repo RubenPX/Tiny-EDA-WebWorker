@@ -1,20 +1,18 @@
-import { cachedPromise } from "../../Shared/cache/LazyLoading";
-import { Observable } from "../../Shared/Events/Observable";
-import type { userRepository } from "../domain/userRepository";
+import { EventBroker } from '../../Shared/Events/EventBroker';
+import { EventRunner } from '../../Shared/Events/EventRunner';
+import { Event } from '../../Shared/Events/Events/Event';
+import { EventUpdate } from '../../Shared/Events/Events/EventUpdate';
+import { User } from '../domain/User';
+import type { userRepository } from '../domain/userRepository';
 
-class GetUsers extends Observable<User[]> {
-	private readonly cachedUsersInstance: cachedPromise<User[]>;
+class GetUsers extends EventRunner<User[]> {
+	public eventName: string = 'GetUsers';
 
-	constructor(private readonly userRepository: userRepository) {
-		super();
-		this.cachedUsersInstance = this.userRepository.getUsersCache();
-		this.cachedUsersInstance.onUpdate((data) => this.notify(data));
+	constructor(broker: EventBroker, private readonly userRepository: userRepository) {
+		super(broker);
 	}
 
-	async run() {
-		const users: User[] = await this.cachedUsersInstance.getdata();
-
-		// Return first initialized
-		return users;
+	run(event: Event | EventUpdate): Promise<User[]> {
+		throw new Error('Method not implemented.');
 	}
 }

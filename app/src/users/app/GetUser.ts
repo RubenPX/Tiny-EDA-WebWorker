@@ -1,35 +1,19 @@
-import { Event } from '../../Shared/Events/Event';
+import { EventBroker } from '../../Shared/Events/EventBroker';
 import { EventRunner } from '../../Shared/Events/EventRunner';
-import { LazyLoading } from '../../Shared/cache/LazyLoading';
-import { User } from '../domain/User';
-import { UserNotFoundException } from '../domain/exceptions/UserNotFoundException';
+import { Event } from '../../Shared/Events/Events/Event';
+import { EventReturn } from '../../Shared/Events/Events/EventReturn';
+import { EventUpdate } from '../../Shared/Events/Events/EventUpdate';
 import type { userRepository } from '../domain/userRepository';
 
-export class GetUsers extends EventRunner<User[]> {
-	private readonly cachedUsersInstance: LazyLoading<User[]>;
+export class GetUsers extends EventRunner {
+	public eventName: string = 'GetUsers';
 
-	constructor(private readonly userRepository: userRepository) {
-		super();
-		this.cachedUsersInstance = this.userRepository.getUsersCache();
-		this.cachedUsersInstance.onUpdate((data) => this.update(data));
+	constructor(broker: EventBroker, private readonly userRepository: userRepository) {
+		super(broker);
+		userRepository.onUsersUpdate(() => this.run());
 	}
 
-	async run(userID: string): Promise<User> {
-		const user: User | undefined = (await this.cachedUsersInstance.getdata()).find((user) => user.id === userID);
-
-		if (user === undefined) {
-			throw new UserNotFoundException();
-		}
-
-		return user;
-	}
-
-	public EventName: string = 'GetUser';
-	public async update(event: Event<User[]>): Promise<void> {
-		this.notify(event);
-	}
-
-	public async runEvent(event: Event<User[]>): Promise<void> {
-		this.update(event);
+	run(event?: Event | EventUpdate): Promise<EventReturn | undefined> {
+		throw new Error('Method not implemented.');
 	}
 }

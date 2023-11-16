@@ -1,11 +1,7 @@
 {
-  "name": "typescript-basic-skeleton",
+  "name": "skeleton-webworker-app",
   "version": "2.0.0",
   "description": "Bootstrap your new TypeScript project with the bare minimum dependencies",
-  "scripts": {
-    "lint": "eslint --ignore-path .gitignore .",
-    "lint:fix": "npm run lint -- --fix"
-  },
   "author": "KryptoPX",
   "license": "MIT",
   "devDependencies": {

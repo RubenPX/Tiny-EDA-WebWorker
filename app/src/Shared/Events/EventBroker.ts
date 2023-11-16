@@ -1,13 +1,14 @@
-import { Event } from './Event';
+import { Event } from './Events/Event';
 import { EventRunner } from './EventRunner';
+import { EventReturn } from './Events/EventReturn';
 
 export abstract class EventBroker {
 	constructor(
         private eventRoutes: EventRunner<unknown>[]
 	) {}
 
-	public publishEvent<T>(event: Event<T>): boolean {
-		const filteredEvent = this.eventRoutes.find(v => v.EventName === event.EventName);
+	public publishEvent(event: Event<any>): boolean {
+		const filteredEvent = this.eventRoutes.find(v => v.eventName === event.eventName);
 		if (filteredEvent) {
 			filteredEvent.runEvent(event);
 			return true;
@@ -16,5 +17,5 @@ export abstract class EventBroker {
 	}
 
 	abstract processEvent(event: Event<any>): void;
-	abstract sendEvent(event: Event<any>): void;
+	abstract sendEvent(event: EventReturn<any>): void;
 }
