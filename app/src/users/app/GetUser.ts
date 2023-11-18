@@ -1,19 +1,28 @@
 import { EventBroker } from '../../Shared/Events/EventBroker';
 import { EventRunner } from '../../Shared/Events/EventRunner';
 import { Event } from '../../Shared/Events/Events/Event';
-import { EventReturn } from '../../Shared/Events/Events/EventReturn';
-import { EventUpdate } from '../../Shared/Events/Events/EventUpdate';
+import { EventError } from '../../Shared/Events/Events/EventError';
+import { User } from '../domain/User';
+import { UserNotFoundException } from '../domain/exceptions/UserNotFoundException';
 import type { userRepository } from '../domain/userRepository';
 
-export class GetUsers extends EventRunner {
-	public eventName: string = 'GetUsers';
+export class GetUser extends EventRunner<User, string> {
+	public runnerMethod: string = 'GetUsers';
 
-	constructor(broker: EventBroker, private readonly userRepository: userRepository) {
-		super(broker);
-		userRepository.onUsersUpdate(() => this.run());
+	constructor(
+		eventBroker: EventBroker,
+		private userRepository: userRepository
+	) {
+		super(eventBroker);
 	}
 
-	run(event?: Event | EventUpdate): Promise<EventReturn | undefined> {
-		throw new Error('Method not implemented.');
+	protected async runEvent(event: Event<string, unknown>): Promise<User> {
+		const param = event.params;
+		if (param === undefined) throw new EventError('User id is not defined', undefined, event);
+
+		const foundUser = await this.userRepository.getUser(param);
+		if (foundUser === null) throw new UserNotFoundException();
+
+		return foundUser;
 	}
 }

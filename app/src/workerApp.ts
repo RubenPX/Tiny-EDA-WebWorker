@@ -1,5 +1,4 @@
 import { EventBroker } from './Shared/Events/EventBroker';
-import { EventRunner } from './Shared/Events/EventRunner';
 import { Event } from './Shared/Events/Events/Event';
 import { EventError } from './Shared/Events/Events/EventError';
 import { EventReturn } from './Shared/Events/Events/EventReturn';
@@ -7,21 +6,21 @@ import { EventReturn } from './Shared/Events/Events/EventReturn';
 const instance = this as unknown as Worker;
 
 export class WorkerApp extends EventBroker {
-	constructor(eventRoutes: EventRunner[]) {
-		super(eventRoutes);
+	constructor() {
+		super();
 		console.log('WORKER APP INITIALIZED');
 	}
 
 	processEvent(event: Event<any>): void {
 		if (!(event instanceof Event)) {
-			this.sendEvent(new EventError('post message is not a event type', event));
+			this.sendEvent(new EventError('post message is not a event type', undefined, event));
 		}
 
 		try {
 			console.info('Event recived');
-			this.publishEvent(event);
+			this.sendEvent(event);
 		} catch (error) {
-			this.sendEvent(new EventError(event.eventName, { data: error }));
+			this.sendEvent(new EventError(event.method, { data: error }, event));
 		}
 	}
 
@@ -30,4 +29,4 @@ export class WorkerApp extends EventBroker {
 	}
 }
 
-const app = new WorkerApp([]);
+const app = new WorkerApp();

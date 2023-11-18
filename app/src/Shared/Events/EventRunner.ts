@@ -1,34 +1,43 @@
 import { EventBroker } from './EventBroker';
 import { Event } from './Events/Event';
+import { EventError } from './Events/EventError';
 import { EventReturn } from './Events/EventReturn';
-import { EventUpdate } from './Events/EventUpdate';
 
-export abstract class EventRunner<returnData = any, params = {}> {
-	constructor(
-		private readonly broker: EventBroker
-	) {}
+export abstract class EventRunner<returnData = undefined, runnerParams = undefined> {
+	private events: { [idEvent: string]: (data: returnData) => void } = {};
+	public readonly abstract runnerMethod: string;
 
-	// eslint-disable-next-line no-use-before-define
-	private observers: EventRunner[] = [];
-	attach(observer: EventRunner): void {
-		if (!this.observers.includes(observer)) this.observers.push(observer);
+	constructor(private eventBroker: EventBroker) {
+		this.initialize();
 	}
 
-	detach(observer: EventRunner): void {
-		const index = this.observers.indexOf(observer);
-		if (index !== -1) this.observers.splice(index, 1);
+	private initialize() {
+		this.eventBroker.subscribe(this, this.runnerMethod, (event) => {
+			try {
+				const processedData = this.runEvent(event);
+				this.eventBroker.publish(new EventReturn(this.runnerMethod, { data: processedData, params: event.params }));
+			} catch (error) {
+				if (error instanceof EventError) {
+					this.eventBroker.publish(error);
+				}
+
+				console.error('Uncontrolled error', error);
+				this.eventBroker.publish(new EventError('Uncontrolled error', error, new Event('')));
+			}
+		});
 	}
 
-	notify<P, D>(event: EventUpdate<P, D>): void {
-		this.observers.forEach((observer) => observer.run(event));
+	/**
+	 * Listen to specified event
+	 * @param idEvent event id (if exists it will be replaced)
+	 * @param callback callback that returns data
+	 * @param params If specified, the event will be executed immediately with params
+	 */
+	on(idEvent: string, callback: (data: returnData) => void) {
+		const foundEvent = this.events[idEvent] as ((data: returnData) => void) | undefined;
+		if (foundEvent) console.log('Replaced event with id: ' + idEvent);
+		this.events[idEvent] = callback;
 	}
 
-	public runEvent(event: Event<params>) {
-		const returnData = this.run(event);
-		this.broker.sendEvent(new EventReturn(event.eventName, { params: event.params, data: returnData }));
-	}
-
-    /** related events runners **/
-    public abstract eventName: string;
-    protected abstract run(event: Event<params> | EventUpdate): Promise<returnData>;
+	protected abstract runEvent(event: Event<runnerParams>): Promise<returnData>;
 }

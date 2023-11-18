@@ -2,8 +2,8 @@ import { LazyLoading } from '../../Shared/cache/LazyLoading';
 import { User } from './User';
 
 export interface userRepository {
-	getUsers(): User[];
-	getUser(): User;
+	getUsers(): Promise<User[]>;
+	getUser(id: string): Promise<User | null>;
 
 	onUsersUpdate(hander: (data: User[]) => {});
 }
