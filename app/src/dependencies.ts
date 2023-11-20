@@ -2,7 +2,7 @@
 
 import { EventBroker } from './Shared/Events/EventBroker';
 import { GetUser } from './users/app/GetUser';
-import { InCodeUserRepository } from './users/infrastructure/inCodeRepository';
+import { InCodeUserRepository } from './users/infrastructure/inCodeUserRepository';
 
 const eventBroker: EventBroker = new EventBroker();
 

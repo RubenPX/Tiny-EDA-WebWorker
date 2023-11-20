@@ -13,14 +13,14 @@ export class WorkerApp extends EventBroker {
 
 	processEvent(event: Event<any>): void {
 		if (!(event instanceof Event)) {
-			this.sendEvent(new EventError('post message is not a event type', undefined, event));
+			this.sendEvent(new EventError(event, 'post message is not a event type', undefined));
 		}
 
 		try {
 			console.info('Event recived');
 			this.sendEvent(event);
 		} catch (error) {
-			this.sendEvent(new EventError(event.method, { data: error }, event));
+			this.sendEvent(new EventError(event, event.method, { data: error }));
 		}
 	}
 
