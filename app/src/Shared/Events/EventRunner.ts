@@ -14,15 +14,17 @@ export abstract class EventRunner<returnData = undefined, runnerParams = undefin
 	private initialize() {
 		this.eventBroker.subscribe(this, this.runnerMethod, (event) => {
 			try {
-				const processedData = this.runEvent(event);
-				this.eventBroker.publish(new EventReturn(this.runnerMethod, { data: processedData, params: event.params }));
-			} catch (error) {
-				if (error instanceof EventError) {
-					this.eventBroker.publish(error);
+				if (event instanceof EventReturn) {
+					this.postRunEvent && this.postRunEvent(event);
+				} else {
+					const processedData = this.runEvent(event);
+					this.eventBroker.publish(new EventReturn(this.runnerMethod, { data: processedData, params: event.params }));
 				}
+			} catch (error) {
+				if (error instanceof EventError) this.eventBroker.publish(error);
 
 				console.error('Uncontrolled error', error);
-				this.eventBroker.publish(new EventError('Uncontrolled error', error, new Event('')));
+				this.eventBroker.publish(new EventError(new Event(''), 'Uncontrolled error', error));
 			}
 		});
 	}
@@ -39,5 +41,15 @@ export abstract class EventRunner<returnData = undefined, runnerParams = undefin
 		this.events[idEvent] = callback;
 	}
 
+	/**
+	 * Este metodo se ejecuta cada vez que se intercepta un evento nuevo
+	 * @param event Evento consumido
+	 */
 	protected abstract runEvent(event: Event<runnerParams>): Promise<returnData>;
+
+	/**
+	 * Este metodo se ejecuta cada vez que un evento de retorno es interceptado
+	 * @param event Evento de retorno
+	 */
+	protected postRunEvent?(event: EventReturn<runnerParams>): void;
 }

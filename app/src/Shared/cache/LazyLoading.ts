@@ -12,7 +12,7 @@ export abstract class LazyLoading<T> {
 
 	constructor(promise: () => Promise<T>, private readonly id: string, private readonly dataDTO: string) {
 		this.generatePromise = promise;
-		console.log(['LazyFetch', 'INSTANCED', dataDTO, id]);
+		console.log(['LazyFetch', 'INSTANCED', dataDTO, this.id]);
 		this.handlers = [];
 		this.handlers.push(() => console.log(['LazyFetch', 'UPDATE', this.dataDTO]));
 	}
@@ -41,7 +41,7 @@ export abstract class LazyLoading<T> {
 		return promData;
 	}
 
-	public runUpdate = async() => this.setData(await this.getdata());
+	public runUpdate = async () => this.setData(await this.getdata());
 	public setData: (data: T) => void = (data: T) => this.doUpdate(data);
 	public forceRun: () => void = () => this.fetchData();
 }

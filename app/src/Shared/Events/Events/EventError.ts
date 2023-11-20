@@ -1,7 +1,7 @@
 import { Event } from './Event';
 
 export class EventError extends Error {
-	constructor(message: string, public readonly data: any, public readonly event: Event<any, any>) {
+	constructor(public readonly event: Event, message: string, public readonly data: any = undefined) {
 		super(message);
 	}
 }

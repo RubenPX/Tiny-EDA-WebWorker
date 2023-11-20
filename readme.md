@@ -4,5 +4,39 @@
 
 La idea de este proyecto es crear un proyecto base donde se use una arquitectura basada en eventos para usarlo con WebWorker
 
+## Diagrama de Event Broker
+
+```mermaid
+classDiagram
+    class EventBroker
+        EventBroker : -handlers
+        EventBroker : +subscribe(eventRunner, id, callback)
+        EventBroker : +unsubscribe(eventRunner, id)
+        EventBroker : +publish(event)
+
+    class EventRunner { <<abstract>> }
+        EventRunner : -events
+        EventBroker : -eventBroker
+        EventRunner : -initialize()
+        EventRunner : +on(eventRunner, id)
+        EventRunner : [abstract] +runEvent(event)
+        EventRunner : [abstract] [optional] +runReturnEvent(event)
+```
+
+## Fases de un evento
+```mermaid
+stateDiagram-v2
+    state EventRunner {
+        state if_state <<choice>>
+        [*] --> Message
+        Message --> if_state: parse
+        if_state --> Event
+        postEventPu: ReturnEvent
+        Event --> postEventPu
+        postEventPu --> [*]: Publish to event broker
+        if_state --> ReturnEvent
+    }
+```
+
 > [!note]
 > Descripción aun por terminar (Probablemente se hara en inglés)

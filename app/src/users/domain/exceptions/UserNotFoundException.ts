@@ -1,7 +1,8 @@
-import { ResponseError } from '../../../Shared/exceptions/ResponseError';
+import { Event } from '../../../Shared/Events/Events/Event';
+import { EventError } from '../../../Shared/Events/Events/EventError';
 
-export class UserNotFoundException extends ResponseError {
-	constructor(message: string = 'User not found', statusCode: number = 404) {
-		super(message, statusCode);
-	}
+export class UserNotFoundException extends EventError {
+    constructor(event: Event, message: string = 'User not found', data: any = undefined) {
+        super(event, message, data)
+    }
 }
