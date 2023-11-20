@@ -9,18 +9,22 @@ export class WorkerApp extends EventBroker {
 	constructor() {
 		super();
 		console.log('WORKER APP INITIALIZED');
+		instance.onmessage = this.processEvent
 	}
 
-	processEvent(event: Event<any>): void {
-		if (!(event instanceof Event)) {
-			this.sendEvent(new EventError(event, 'post message is not a event type', undefined));
+	processEvent(msgEvent: MessageEvent<any>): void {
+		const { data } = msgEvent;
+
+		if (!(data instanceof Event)) {
+			this.sendEvent(new EventError(new Event(''), 'post message is not a event type', data));
+			return;
 		}
 
 		try {
 			console.info('Event recived');
-			this.sendEvent(event);
+			this.sendEvent(data);
 		} catch (error) {
-			this.sendEvent(new EventError(event, event.method, { data: error }));
+			this.sendEvent(new EventError(data, data.method, { data: error }));
 		}
 	}
 
