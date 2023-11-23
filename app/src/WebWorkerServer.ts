@@ -44,6 +44,8 @@ export class WorkerApp extends EventBroker {
 	}
 }
 
+instance.postMessage({ initialized: false, message: "initializing worker..." });
 WorkerApp.initialize(() => {
 	console.log("Worker fully initialized");
+	instance.postMessage({ initialized: true, message: "App initialized" });
 })
