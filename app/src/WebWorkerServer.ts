@@ -2,14 +2,25 @@ import { EventBroker } from './Shared/Events/EventBroker';
 import { Event } from './Shared/Events/Events/Event';
 import { EventError } from './Shared/Events/Events/EventError';
 import { EventReturn } from './Shared/Events/Events/EventReturn';
+import { events, repositories } from './dependencies';
 
 const instance = this as unknown as Worker;
 
 export class WorkerApp extends EventBroker {
-	constructor() {
+	private repos: ReturnType<typeof repositories> | undefined = undefined;
+	private useCases: ReturnType<typeof events> | undefined = undefined;
+
+	private constructor() {
 		super();
-		console.log('WORKER APP INITIALIZED');
 		instance.onmessage = this.processEvent
+	}
+
+	public static async initialize(callback: (app: WorkerApp) => void) {
+		let app = new WorkerApp();
+		app.repos = await repositories();
+		app.useCases = await events(app, app.repos);
+		console.log('WORKER APP INITIALIZED');
+		callback(app);
 	}
 
 	processEvent(msgEvent: MessageEvent<any>): void {
@@ -33,4 +44,6 @@ export class WorkerApp extends EventBroker {
 	}
 }
 
-const app = new WorkerApp();
+WorkerApp.initialize(() => {
+	console.log("Worker fully initialized");
+})
