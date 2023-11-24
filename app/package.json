@@ -1,5 +1,5 @@
 {
-  "name": "skeleton-webworker-app",
+  "name": "app-counter",
   "version": "2.0.0",
   "description": "Bootstrap your new TypeScript project with the bare minimum dependencies",
   "author": "KryptoPX",
