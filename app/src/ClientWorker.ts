@@ -3,16 +3,16 @@ import { ConsoleColors } from './ConsoleColors';
 export class ClientWorker {
 	constructor(private worker: Worker) {
 		this.worker.postMessage('init');
-		this.worker.onmessage = this.onMessage;
-		this.worker.onerror = this.onError;
+		this.worker.onmessage = ClientWorker.onMessage;
+		this.worker.onerror = ClientWorker.onError;
 	}
 
-	private onMessage(message: MessageEvent) {
-		console.debug(message);
+	private static onMessage(message: MessageEvent) {
+		if (message.data instanceof Error) return ClientWorker.onError(message.data);
 		console.debug('%c⮞', ConsoleColors.green, { message: message.data });
 	}
 
-	private onError(message: ErrorEvent) {
-		console.log(message);
+	private static onError(message: ErrorEvent | Error) {
+		console.debug('%c⭙', ConsoleColors.red, message);
 	}
 }

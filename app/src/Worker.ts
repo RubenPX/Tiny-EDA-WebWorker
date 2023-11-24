@@ -13,9 +13,14 @@ export class App {
     };
 
 	public publish(event: MessageEvent) {
-		console.debug('%c⮜', ConsoleColors.blue, { message: event.data });
-		if (event.data === 'init') {
-			this.initialize();
+		try {
+			console.debug('%c⮜', ConsoleColors.blue, { message: event.data });
+			if (event.data === 'init') {
+				this.initialize();
+				throw new Error('TEST');
+			}
+		} catch (error) {
+			this.postMessage(error);
 		}
 	}
 
