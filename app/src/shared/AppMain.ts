@@ -35,7 +35,7 @@ export abstract class AppMain {
 		} else if (event instanceof MessageEvent) {
 			const data = event.data;
 			if (data.context && typeof data.context === 'string' && data.method && typeof data.method === 'string') {
-				const newEvent = new EventMessage(data.method, data.context);
+				const newEvent = new EventMessage(data.method, data.context, data.data);
 				this.publish(newEvent);
 			} else {
 				throw new Error('Bad event formatted');

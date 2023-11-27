@@ -7,7 +7,7 @@ export class TestError extends EventRunner {
 		super(main, { context, method: 'runTest' });
 	}
 
-	protected serverRun(messageEvent: EventMessage<any>) {
+	protected run(messageEvent: EventMessage<any>) {
 		throw new Error('This is a test error');
 	}
 }

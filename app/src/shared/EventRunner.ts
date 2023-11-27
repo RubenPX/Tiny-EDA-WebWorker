@@ -11,7 +11,7 @@ export abstract class EventRunner<returnType = any> {
 		this.worker.onEvent(this.runnerMethod, (msg: EventMessage<returnType>) => {
 			if (this.worker.mode === 'client') this.clientRun();
 			else {
-				msg.returnData = this.serverRun(msg);
+				msg.returnData = this.run(msg);
 				this.worker.postMessage(msg);
 			}
 		});
@@ -23,5 +23,5 @@ export abstract class EventRunner<returnType = any> {
 		return msgEvent;
 	}
 
-	protected abstract serverRun(messageEvent: EventMessage<returnType>): returnType;
+	protected abstract run(messageEvent: EventMessage<returnType>): returnType;
 }

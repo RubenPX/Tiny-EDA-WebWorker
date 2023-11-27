@@ -8,9 +8,13 @@ export class ClientWorker {
 		this.postEvent('Root', 'initialize');
 	}
 
-	public postEvent(context: string, method: string) {
-		const eventMsg = new EventMessage(method, context);
+	public postEvent(context: string, method: string, data?: any) {
+		const eventMsg = new EventMessage(method, context, data);
 		this.worker.postMessage(eventMsg);
+	}
+
+	public watchEvent(context: string, method: string) {
+
 	}
 
 	private static onMessage(message: MessageEvent) {
@@ -26,6 +30,8 @@ export class ClientWorker {
 		const { context, method, returnData, id } = data;
 		if (context && typeof context === 'string' && method && typeof method === 'string') {
 			console.error('%c⭙', ConsoleColors.red, { id, context, method }, '\n', returnData);
+		} else {
+			console.error(data);
 		}
 	}
 }

@@ -6,7 +6,9 @@ export class TestApp {
 	private constructor(public readonly main: AppMain) {}
 
 	private initialize() {
-		const getCount = new TestError(this.main, this.context);
+		const _ = [
+			new TestError(this.main, this.context)
+		];
 	}
 
 	public static instance(main: AppMain) {
