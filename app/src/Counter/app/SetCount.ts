@@ -11,7 +11,7 @@ export class SetCount extends EventRunner<number> {
 
 	protected run(messageEvent: EventMessage<number, number>): number {
 		if (messageEvent.data == null) throw new Error('Param required to set a number');
-		console.log('%cSetCount', ConsoleColors.green, 'OK');
+		console.debug('%cSetCount', ConsoleColors.green, 'OK');
 		this.counterRepo.setCount(messageEvent.data);
 		return this.counterRepo.getCount();
 	}

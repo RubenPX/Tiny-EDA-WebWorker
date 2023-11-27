@@ -19,7 +19,7 @@ export abstract class AppMain {
 	public publish(event: EventMessage | MessageEvent): void {
 		if (event instanceof EventMessage) {
 			const { id, context, method } = event;
-			console.debug('%c⮞', ConsoleColors.blue, { id, context, method });
+			console.debug('%c⮞', ConsoleColors.blue, { id: { id }, context, method });
 
 			const foundCallbacks = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
 			if (foundCallbacks) {
@@ -36,6 +36,7 @@ export abstract class AppMain {
 			const data = event.data;
 			if (data.context && typeof data.context === 'string' && data.method && typeof data.method === 'string') {
 				const newEvent = new EventMessage(data.method, data.context, data.data);
+				if (data.id) newEvent.id = data.id;
 				this.publish(newEvent);
 			} else {
 				throw new Error('Bad event formatted');

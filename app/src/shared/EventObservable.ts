@@ -1,4 +1,4 @@
-abstract class Observable<dataType> {
+abstract class EventObservable<dataType> {
     abstract methodName: string;
 
     constructor() {
