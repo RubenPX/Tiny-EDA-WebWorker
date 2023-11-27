@@ -1,9 +1,10 @@
-import { ConsoleColors } from './ConsoleColors';
+import { CounterApp } from './Counter/Counter';
 import { MemoryCounterRepository } from './Counter/Infrastructure/MemoryCounterRepository';
-import { CounterApp } from './Counter/app';
 import { CounterRepository } from './Counter/domain/CounterRepository';
+import { AppMain } from './shared/AppMain';
+import { EventMessage } from './shared/EventMessage';
 
-export class App {
+export class App extends AppMain {
 	public repositories?: {
         counterRepo: CounterRepository
     };
@@ -12,28 +13,23 @@ export class App {
         couterApp: CounterApp
     };
 
-	public publish(event: MessageEvent) {
-		try {
-			console.debug('%c⮜', ConsoleColors.blue, { message: event.data });
-			if (event.data === 'init') {
-				this.initialize();
-				throw new Error('TEST');
-			}
-		} catch (error) {
-			this.postMessage(error);
-		}
+	constructor(public readonly mode: 'client' | 'server') {
+		super();
+		onmessage = this.publish;
+		this.onEvent({ context: 'root', method: 'initialize' }, (eventMsg) => { this.initialize(eventMsg); });
 	}
 
-	public postMessage: Worker['postMessage'] = (message: any) => {
+	public postMessage(message: any) {
 		postMessage(message);
-	};
+	}
 
-	private async initialize() {
+	private async initialize(eventMsg: EventMessage) {
 		console.debug('WebWorker', 'Initializing App...');
 		await this.initializeDB();
 		await this.initializeApps();
 		console.debug('WebWorker', 'App Initialized');
-		this.postMessage('initialized');
+		eventMsg.returnData = 'OK';
+		this.postMessage(eventMsg);
 	}
 
 	private async initializeDB() {
@@ -45,10 +41,14 @@ export class App {
 	private async initializeApps() {
 		const repos = this.repositories!;
 		this.features = {
-			couterApp: await CounterApp.initialize(repos.counterRepo)
+			couterApp: await CounterApp.instance(this, repos.counterRepo)
 		};
 	}
 }
 
-const server = new App();
-onmessage = (ev) => server.publish(ev);
+// @ts-ignore WorkerGlobalScope is defined
+// eslint-disable-next-line no-undef
+if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+	const server = new App('server');
+	onmessage = (ev) => server.publish(ev);
+}
