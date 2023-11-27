@@ -5,7 +5,7 @@ export class ClientWorker {
 	constructor(private worker: Worker) {
 		this.worker.onmessage = ClientWorker.onMessage;
 		this.worker.onerror = ClientWorker.onError;
-		this.postEvent('root', 'initialize');
+		this.postEvent('Root', 'initialize');
 	}
 
 	public postEvent(context: string, method: string) {

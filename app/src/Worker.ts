@@ -13,7 +13,7 @@ export class App extends AppMain {
 	constructor(public readonly mode: 'client' | 'server') {
 		super();
 		onmessage = this.publish;
-		this.onEvent({ context: 'root', method: 'initialize' }, (eventMsg) => { this.initialize(eventMsg); });
+		this.onEvent({ context: 'Root', method: 'initialize' }, (eventMsg) => { this.initialize(eventMsg); });
 	}
 
 	public postMessage(message: any) {
