@@ -20,8 +20,18 @@ export abstract class AppMain {
 		if (event instanceof EventMessage) {
 			const { id, context, method } = event;
 			console.debug('%c⮞', ConsoleColors.blue, { id, context, method });
+
 			const foundCallbacks = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
-			if (foundCallbacks) foundCallbacks.callback.forEach(callback => callback(event));
+			if (foundCallbacks) {
+				foundCallbacks.callback.forEach(callback => {
+					try {
+						callback(event);
+					} catch (error) {
+						event.returnData = error;
+						this.postMessage(event);
+					}
+				});
+			}
 		} else if (event instanceof MessageEvent) {
 			const data = event.data;
 			if (data.context && typeof data.context === 'string' && data.method && typeof data.method === 'string') {
@@ -33,5 +43,5 @@ export abstract class AppMain {
 		}
 	}
 
-public abstract postMessage(data: EventMessage): void;
+	public abstract postMessage(data: EventMessage): void;
 }

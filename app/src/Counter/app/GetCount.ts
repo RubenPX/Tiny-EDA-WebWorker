@@ -4,8 +4,8 @@ import { EventRunner } from '../../shared/EventRunner';
 import { CounterRepository } from '../domain/CounterRepository';
 
 export class GetCount extends EventRunner<number> {
-	constructor(main: AppMain, public counterRepo: CounterRepository, runnerMethod = { context: 'Counter', method: 'GetCount' }) {
-		super(main, runnerMethod);
+	constructor(main: AppMain, context: string, public counterRepo: CounterRepository) {
+		super(main, { context, method: 'GetCount' });
 	}
 
 	protected serverRun(messageEvent: EventMessage<number>): number {

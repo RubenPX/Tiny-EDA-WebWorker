@@ -3,10 +3,11 @@ import { GetCount } from './app/GetCount';
 import { CounterRepository } from './domain/CounterRepository';
 
 export class CounterApp {
+	public readonly context: string = 'CounterApp';
 	private constructor(public readonly main: AppMain, public readonly counterRepo: CounterRepository) {}
 
 	private initialize() {
-		const getCount = new GetCount(this.main, this.counterRepo);
+		const getCount = new GetCount(this.main, this.context, this.counterRepo);
 	}
 
 	public static instance(main: AppMain, counterRepo: CounterRepository) {

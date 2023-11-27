@@ -1,3 +1,4 @@
+import { TestApp } from './AppTest/AppTest';
 import { CounterApp } from './Counter/Counter';
 import { MemoryCounterRepository } from './Counter/Infrastructure/MemoryCounterRepository';
 import { CounterRepository } from './Counter/domain/CounterRepository';
@@ -5,13 +6,9 @@ import { AppMain } from './shared/AppMain';
 import { EventMessage } from './shared/EventMessage';
 
 export class App extends AppMain {
-	public repositories?: {
-        counterRepo: CounterRepository
-    };
+	public repositories?: { [key: string]: any };
 
-	public features?: {
-        couterApp: CounterApp
-    };
+	public features?: {[key: string]: any};
 
 	constructor(public readonly mode: 'client' | 'server') {
 		super();
@@ -28,6 +25,8 @@ export class App extends AppMain {
 		await this.initializeDB();
 		await this.initializeApps();
 		console.debug('WebWorker', 'App Initialized');
+
+		console.info('Event routes:', this.eventRoutes);
 		eventMsg.returnData = 'OK';
 		this.postMessage(eventMsg);
 	}
@@ -41,7 +40,8 @@ export class App extends AppMain {
 	private async initializeApps() {
 		const repos = this.repositories!;
 		this.features = {
-			couterApp: await CounterApp.instance(this, repos.counterRepo)
+			CounterApp : await CounterApp.instance(this, repos.counterRepo),
+			TestApp    : await TestApp.instance(this)
 		};
 	}
 }

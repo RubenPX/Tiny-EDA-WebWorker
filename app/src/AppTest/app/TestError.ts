@@ -1,14 +1,13 @@
-export class TestError {
-	public static Access = { context: 'AppTest', method: 'TestError' };
-	public readonly Access = TestError.Access;
+import { AppMain } from '../../shared/AppMain';
+import { EventMessage } from '../../shared/EventMessage';
+import { EventRunner } from '../../shared/EventRunner';
 
-	private constructor() {}
-
-	public static async instance() {
-
+export class TestError extends EventRunner {
+	constructor(main: AppMain, context: string) {
+		super(main, { context, method: 'runTest' });
 	}
 
-	public runServer(): {
-
+	protected serverRun(messageEvent: EventMessage<any>) {
+		throw new Error('This is a test error');
 	}
 }
