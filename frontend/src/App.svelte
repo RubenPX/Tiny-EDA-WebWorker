@@ -1,7 +1,11 @@
 <script lang="ts">
   import worker from "app-counter/src/Worker?worker";
 
-  import { ClientWorker } from "app-counter/src/Client/ClientWorker";
+  import {
+    APIRunner,
+    AppRoutes,
+    ClientWorker,
+  } from "app-counter/src/shared/Client/ClientWorker";
   import { onMount } from "svelte";
   import type { EventMessage } from "app-counter/src/shared/EventMessage";
 
@@ -19,21 +23,23 @@
   }
 
   async function randomizeGET() {
-    let dat = await cli.postEventReturn(
-      "Counter",
-      "SetCount",
-      generateNumber()
-    );
-    num = dat.returnData;
+    let builder = cli.createBuilder(AppRoutes.setCount);
+    let runner = new APIRunner(builder);
+    num = (await runner.run(generateNumber())) ?? -1;
   }
 
   async function randomizeSET() {
-    let dat = await cli.postEvent("Counter", "SetCount", generateNumber());
+    let builder = cli.createBuilder(AppRoutes.setCount);
+    let runner = new APIRunner(builder);
+    await runner.run(generateNumber());
   }
 
   onMount(initializeReactive);
   function initializeReactive() {
-    cli.observeEvent("Counter", "SetCount", (ev: EventMessage<number>) => {
+    let builder = cli.createBuilder(AppRoutes.setCount);
+    let runner = new APIRunner(builder);
+
+    runner.observe((ev: EventMessage<number>) => {
       if (ev.returnData !== undefined) numReactivo = ev.returnData;
     });
   }

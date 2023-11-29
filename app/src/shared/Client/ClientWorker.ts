@@ -1,5 +1,16 @@
-import { ConsoleColors } from '../ConsoleColors';
-import { EventMessage } from '../shared/EventMessage';
+import { TestApp } from '../../AppTest/AppTest';
+import { ConsoleColors } from '../../ConsoleColors';
+import { CounterApp } from '../../Counter/Counter';
+import { EventMessage } from '../EventMessage';
+import { ApiBuilder } from './Builder/APIBuilder';
+import { ClientRouteDefinition } from './ClientRouteDefinition';
+
+export { APIRunner } from './Runner/APIRunner';
+
+export const AppRoutes = {
+	...TestApp.definitions,
+	...CounterApp.definitions
+};
 
 export class ClientWorker {
 	constructor(private worker: Worker) {
@@ -50,14 +61,19 @@ export class ClientWorker {
 		this.worker.postMessage(eventMsg);
 	}
 
+	public createBuilder<r, p>(route: ClientRouteDefinition<r, p>) {
+		return new ApiBuilder(route, this);
+	}
+
 	private static messageRecived(message: MessageEvent) {
-		const data = message.data;
+		const msgData = message.data;
 		if (message.data instanceof EventMessage) {
 			console.log('!!!');
 		}
-		const { context, method, returnData, id, requireObserver, requireReturn } = data;
+
+		const { context, method, returnData, id, requireObserver } = msgData;
 		if (typeof context === 'string' && typeof method === 'string') {
-			if (returnData instanceof Error) return ClientWorker.onError(data);
+			if (returnData instanceof Error) return ClientWorker.onError(returnData);
 			if (requireObserver) {
 				console.debug('%c⊚', ConsoleColors.green, { id: { id }, runner: `${context} → ${method}`, returnData });
 			} else {

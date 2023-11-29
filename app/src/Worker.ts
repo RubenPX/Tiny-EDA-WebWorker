@@ -1,7 +1,6 @@
 import { TestApp } from './AppTest/AppTest';
 import { CounterApp } from './Counter/Counter';
 import { MemoryCounterRepository } from './Counter/Infrastructure/MemoryCounterRepository';
-import { CounterRepository } from './Counter/app/CounterRepository';
 import { AppMain } from './shared/AppMain';
 import { EventMessage } from './shared/EventMessage';
 

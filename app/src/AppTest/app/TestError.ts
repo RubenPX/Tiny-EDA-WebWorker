@@ -4,7 +4,7 @@ import { EventRunner } from '../../shared/EventRunner';
 
 export class TestError extends EventRunner {
 	constructor(main: AppMain, context: string) {
-		super(main, { context, method: 'runTest' });
+		super(main, { context, method: 'runTestError' });
 	}
 
 	protected run(messageEvent: EventMessage<any>) {
