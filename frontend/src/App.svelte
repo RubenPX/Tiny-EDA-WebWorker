@@ -39,10 +39,14 @@
   }
 </script>
 
-<main style="display: flex; align-items: center; width: 100%">
+<main style="display: flex; width: 100%">
+  <u style="margin: 10px">
+    It's necessary to see console to view worker events
+  </u>
+
   <div style="display: flex; align-items: center;">
     <button style="margin: 10px;" on:click={randomizeSET}>
-      Randomize SET
+      Randomize Async
     </button>
     <h3 style="text-align: left; padding: 0; margin: 0;">
       Reactivo: {numReactivo}
@@ -51,14 +55,14 @@
 
   <div style="display: flex; align-items: center;">
     <button style="margin: 10px;" on:click={randomizeGET}>
-      Randomize GET
+      Randomize Sync
     </button>
     <h3 style="text-align: left; padding: 0; margin: 0;">
       Return: {num}
     </h3>
   </div>
 
-  <button on:click={runError} style="margin-top: 20px;">Run test error</button>
+  <button on:click={runError} style="margin: 10px;"> Run test error </button>
 </main>
 
 <style>
