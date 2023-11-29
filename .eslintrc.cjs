@@ -13,6 +13,7 @@ module.exports = {
 		semi                          : [2, 'always'],
 		'key-spacing'                 : ['error', { align: { beforeColon: true, afterColon: true, on: 'colon' } }],
 		'no-unused-vars'              : 'off',
-		'newline-per-chained-call'    : ['error', { ignoreChainWithDepth: 4 }]
+		'newline-per-chained-call'    : ['error', { ignoreChainWithDepth: 4 }],
+		'max-len'                     : [1, { code: 150 }]
 	}
 };

@@ -4,38 +4,51 @@
 
 La idea de este proyecto es crear un proyecto base donde se use una arquitectura basada en eventos para usarlo con WebWorker
 
-## Diagrama de Event Broker
+## Comunicación entre el navegador y el WebWorker (Sincrono)
 
-```mermaid
-classDiagram
-    class EventBroker
-        EventBroker : -handlers
-        EventBroker : +subscribe(eventRunner, id, callback)
-        EventBroker : +unsubscribe(eventRunner, id)
-        EventBroker : +publish(event)
-
-    class EventRunner { <<abstract>> }
-        EventRunner : -events
-        EventBroker : -eventBroker
-        EventRunner : -initialize()
-        EventRunner : +on(eventRunner, id)
-        EventRunner : [abstract] +runEvent(event)
-        EventRunner : [abstract] [optional] +runReturnEvent(event)
-```
-
-## Fases de un evento
 ```mermaid
 stateDiagram-v2
-    state EventRunner {
-        state if_state <<choice>>
-        [*] --> Message
-        Message --> if_state: parse
-        if_state --> Event
-        postEventPu: ReturnEvent
-        Event --> postEventPu
-        postEventPu --> [*]: Publish to event broker
-        if_state --> ReturnEvent
+    state client_start <<fork>>
+    note left of client_start : Send event to worker
+
+    state worker_start <<join>>
+    note left of worker_start : Recive event to worker
+
+    state worker_end <<join>>
+    note right of worker_end : Send event to client
+
+    state client_end <<fork>>
+    note right of client_end : Recive event from worker
+    
+    %% Request flow
+
+    [*] --> client_start: Request 
+    
+    state client {
+        client_start --> worker_start
     }
+
+    state is_observer <<choice>>
+
+    state Worker {
+        worker_start --> is_observer: is observer?
+        is_observer --> worker_end
+
+        is_observer --> observer
+        observer --> worker_end
+        note left of observer : If observer detect\n value has changed\n it will trigger
+
+        worker_end --> client_end
+    }
+
+    state client {
+        client_end
+    }
+
+    client_end --> [*]: Response
+
+class observer badBadEvent
+classDef badBadEvent fill:#058,color:white,font-weight:bold
 ```
 
 > [!note]
