@@ -19,7 +19,7 @@
   }
 
   function generateNumber(): number {
-    return parseInt(Math.random() * 100);
+    return parseInt(Math.random() * 100 + "");
   }
 
   async function randomizeGET() {
@@ -52,7 +52,7 @@
 
   <div style="display: flex; align-items: center;">
     <button style="margin: 10px;" on:click={randomizeSET}>
-      Randomize Async
+      Randomize ASync
     </button>
     <h3 style="text-align: left; padding: 0; margin: 0;">
       Reactivo: {numReactivo}
