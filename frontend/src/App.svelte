@@ -1,41 +1,63 @@
 <script lang="ts">
   import worker from "app-counter/src/Worker?worker";
 
-  import { ClientWorker } from "app-counter/src/ClientWorker";
+  import { ClientWorker } from "app-counter/src/Client/ClientWorker";
+  import { onMount } from "svelte";
+  import type { EventMessage } from "app-counter/src/shared/EventMessage";
 
   let cli = new ClientWorker(new worker());
 
   let num: number = 0;
+  let numReactivo: number = 0;
 
   function runError() {
     cli.postEvent("TestApp", "runTest");
   }
 
-  function plusOneCount() {
-    let num = parseInt(Math.random() * 100);
-    cli.postEvent("Counter", "SetCount", num);
+  function generateNumber(): number {
+    return parseInt(Math.random() * 100);
   }
 
-  async function minusOneCount() {
-    let newNum = parseInt(Math.random() * 100);
-    let dat = await cli.postEventReturn("Counter", "SetCount", newNum);
+  async function randomizeGET() {
+    let dat = await cli.postEventReturn(
+      "Counter",
+      "SetCount",
+      generateNumber()
+    );
     num = dat.returnData;
   }
 
-  function initializeReactive() {}
+  async function randomizeSET() {
+    let dat = await cli.postEvent("Counter", "SetCount", generateNumber());
+  }
+
+  onMount(initializeReactive);
+  function initializeReactive() {
+    cli.observeEvent("Counter", "SetCount", (ev: EventMessage<number>) => {
+      if (ev.returnData !== undefined) numReactivo = ev.returnData;
+    });
+  }
 </script>
 
-<main style="margin: 10px;">
-  <button on:click={runError} style="margin-bottom: 20px;">
-    Reset count to 0
-  </button>
-  <div
-    style="display: flex; align-items: center; justify-content: space-around;"
-  >
-    <button on:click={minusOneCount}>-1</button>
-    <h3 style="text-align: center; padding: 0; margin: 0;">Contador: {num}</h3>
-    <button on:click={plusOneCount}>+1</button>
+<main style="display: flex; align-items: center; width: 100%">
+  <div style="display: flex; align-items: center;">
+    <button style="margin: 10px;" on:click={randomizeSET}>
+      Randomize SET
+    </button>
+    <h3 style="text-align: left; padding: 0; margin: 0;">
+      Reactivo: {numReactivo}
+    </h3>
   </div>
+
+  <div style="display: flex; align-items: center;">
+    <button style="margin: 10px;" on:click={randomizeGET}>
+      Randomize GET
+    </button>
+    <h3 style="text-align: left; padding: 0; margin: 0;">
+      Return: {num}
+    </h3>
+  </div>
+
   <button on:click={runError} style="margin-top: 20px;">Run test error</button>
 </main>
 

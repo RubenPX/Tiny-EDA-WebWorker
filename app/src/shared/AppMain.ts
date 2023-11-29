@@ -19,11 +19,11 @@ export abstract class AppMain {
 	public publish(event: EventMessage | MessageEvent): void {
 		if (event instanceof EventMessage) {
 			const { id, context, method } = event;
-			console.debug('%c⮞', ConsoleColors.blue, { id: { id }, context, method });
+			console.debug('%c⮞', ConsoleColors.blue, { id: { id }, runner: `${context} → ${method}` });
 
-			const foundCallbacks = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
-			if (foundCallbacks) {
-				foundCallbacks.callback.forEach(callback => {
+			const foundEventRunners = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
+			if (foundEventRunners) {
+				foundEventRunners.callback.forEach(callback => {
 					try {
 						callback(event);
 					} catch (error) {
@@ -34,8 +34,10 @@ export abstract class AppMain {
 			}
 		} else if (event instanceof MessageEvent) {
 			const data = event.data;
-			if (data.context && typeof data.context === 'string' && data.method && typeof data.method === 'string') {
-				const newEvent = new EventMessage(data.method, data.context, data.data);
+			if (typeof data.context === 'string' && typeof data.method === 'string' && typeof data.requireObserver === 'boolean') {
+				const newEvent = new EventMessage(data.context, data.method, data.data);
+				newEvent.requireObserver = data.requireObserver;
+				newEvent.requireReturn = data.requireReturn;
 				if (data.id) newEvent.id = data.id;
 				this.publish(newEvent);
 			} else {

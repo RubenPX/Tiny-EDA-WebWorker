@@ -1,7 +1,6 @@
 import { AppMain } from '../shared/AppMain';
 import { GetCount } from './app/GetCount';
 import { SetCount } from './app/SetCount';
-import { CountObserve } from './app/observers/CountObserve';
 import { CounterRepository } from './app/CounterRepository';
 
 export class CounterApp {
@@ -11,8 +10,7 @@ export class CounterApp {
 	private initialize() {
 		const _ = [
 			new GetCount(this.main, this.context, this.counterRepo),
-			new SetCount(this.main, this.context, this.counterRepo),
-			new CountObserve(this.main, this.context, this.counterRepo)
+			new SetCount(this.main, this.context, this.counterRepo)
 		];
 	}
 

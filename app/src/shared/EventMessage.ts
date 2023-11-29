@@ -4,10 +4,12 @@ export class EventMessage<outData = any, inData = any> {
 	public id: string = v4();
 
 	public returnData?: outData;
+	public requireObserver: boolean = false;
+	public requireReturn: boolean = false;
 
 	constructor(
-		public readonly method: string,
 		public readonly context: string,
+		public readonly method: string,
 		public readonly data?: inData
 	) {}
 }
