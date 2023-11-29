@@ -8,7 +8,7 @@ export class APIRunner<returnType, paramsType> {
 		this.builder.client.observeEvent(this.builder.route.context, this.builder.route.method, callback);
 	}
 
-	async run(params: paramsType): Promise<returnType | undefined> {
+	async run(params?: paramsType): Promise<returnType | undefined> {
 		const eventReturn = await this.builder.client.postEventReturn(this.builder.route.context, this.builder.route.method, params);
 		return eventReturn.data as returnType | undefined;
 	}

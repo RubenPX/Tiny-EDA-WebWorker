@@ -15,7 +15,8 @@
   let numReactivo: number = 0;
 
   function runError() {
-    cli.postEvent("TestApp", "runTest");
+    let builder = cli.createBuilder(AppRoutes.runTestError);
+    new APIRunner(builder).run();
   }
 
   function generateNumber(): number {

@@ -1,5 +1,5 @@
 import { TestApp } from '../../AppTest/AppTest';
-import { ConsoleColors } from '../../ConsoleColors';
+import { ConsoleColors, ConsolePrefix } from '../../ConsoleColors';
 import { CounterApp } from '../../Counter/Counter';
 import { EventMessage } from '../EventMessage';
 import { ApiBuilder } from './Builder/APIBuilder';
@@ -75,9 +75,9 @@ export class ClientWorker {
 		if (typeof context === 'string' && typeof method === 'string') {
 			if (returnData instanceof Error) return ClientWorker.onError(returnData);
 			if (requireObserver) {
-				console.debug('%c⊚', ConsoleColors.green, { id: { id }, runner: `${context} → ${method}`, returnData });
+				console.debug(...ConsolePrefix.ObserverTriggered, { id: { id }, runner: `${context} → ${method}`, returnData });
 			} else {
-				console.debug('%c⮜', ConsoleColors.green, { id: { id }, runner: `${context} → ${method}`, returnData });
+				console.debug(...ConsolePrefix.MsgIn, { id: { id }, runner: `${context} → ${method}`, returnData });
 			}
 		}
 	}

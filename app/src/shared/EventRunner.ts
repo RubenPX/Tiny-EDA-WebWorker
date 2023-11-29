@@ -1,4 +1,4 @@
-import { ConsoleColors } from '../ConsoleColors';
+import { ConsoleColors, ConsolePrefix } from '../ConsoleColors';
 import { AppMain } from './AppMain';
 import { EventMessage } from './EventMessage';
 
@@ -16,7 +16,7 @@ export abstract class EventRunner<returnType = any> {
 			else {
 				if (msg.requireObserver) {
 					this.observers.push(msg);
-					console.debug('%c⭘', ConsoleColors.blue, `Observer attached to ${this.runnerMethod.context} → ${this.runnerMethod.method}`);
+					console.debug(...ConsolePrefix.ObserverRegister, `Observer attached to ${this.runnerMethod.context} → ${this.runnerMethod.method}`);
 				} else {
 					msg.returnData = this.run(msg);
 					this.worker.postMessage(msg);

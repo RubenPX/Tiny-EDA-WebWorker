@@ -1,4 +1,4 @@
-import { ConsoleColors } from '../ConsoleColors';
+import { ConsoleColors, ConsolePrefix } from '../ConsoleColors';
 import { EventMessage } from './EventMessage';
 
 type eventRoute = { context: string, method: string, callback: ((message: EventMessage) => EventMessage | any)[] };
@@ -19,7 +19,7 @@ export abstract class AppMain {
 	public publish(event: EventMessage | MessageEvent): void {
 		if (event instanceof EventMessage) {
 			const { id, context, method } = event;
-			console.debug('%c⮞', ConsoleColors.blue, { id: { id }, runner: `${context} → ${method}` });
+			console.debug(...ConsolePrefix.MsgOut, { id: { id }, runner: `${context} → ${method}` });
 
 			const foundEventRunners = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
 			if (foundEventRunners) {
