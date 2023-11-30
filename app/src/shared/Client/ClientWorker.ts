@@ -67,10 +67,6 @@ export class ClientWorker {
 
 	private static messageRecived(message: MessageEvent) {
 		const msgData = message.data;
-		if (message.data instanceof EventMessage) {
-			console.log('!!!');
-		}
-
 		const { context, method, returnData, id, requireObserver } = msgData;
 		if (typeof context === 'string' && typeof method === 'string') {
 			if (returnData instanceof Error) return ClientWorker.onError(returnData);
