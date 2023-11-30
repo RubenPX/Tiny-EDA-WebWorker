@@ -79,4 +79,8 @@ export class ClientWorker {
 			}
 		}
 	}
+
+	private static onError(data: MessageEvent | any) {
+		console.error(...ConsolePrefix.Error, 'WORKER UNCONTROLLED ERROR', data);
+	}
 }
