@@ -22,7 +22,8 @@ El proyecto esta dividido en 2 partes.
 - `Frontend`: Presentación para el usuario usando cualquier tipo de framework. (En este ejemplo uso SvelteJS)
 - `App`: Carpeta donde se estructura la funcionalidad. Casos de uso, objetos, repositorios, etc... Es este caso se opta por usar Clean Architecture + Vertical Slicing. Todo siguiendo la opinión de [CodelyTV](https://www.youtube.com/watch?v=y3MWfPDmVqo) y [About Clean Code](https://www.youtube.com/watch?v=7ZXW_oWdTk4).
 
-> Aqui esta un concepto de como se reparte el codigo y sus carpetas. En este caso, la proposición es "Que eres y que capa eres"
+> Aqui esta un concepto de como se reparte el codigo y sus carpetas.   
+> En este caso, la proposición es `Que eres y que capa eres`
 > ![Propuesta](CleanArchitectureFolderProposal.png)
 
 ## Funcionamiento de la aplicación
