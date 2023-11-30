@@ -29,12 +29,7 @@ export abstract class AppMain {
 			const foundEventRunners = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
 			if (foundEventRunners) {
 				foundEventRunners.callback.forEach(callback => {
-					try {
-						callback(event);
-					} catch (error) {
-						event.returnData = error;
-						this.postMessage(event);
-					}
+					callback(event);
 				});
 			} else {
 				throw new EventRouteError(`Route ${context} → ${method} is not defined or implemented`);
@@ -49,7 +44,7 @@ export abstract class AppMain {
 				try {
 					this.publish(newEvent);
 				} catch (error) {
-					console.error(...ConsolePrefix.Error, { error });
+					console.error(...ConsolePrefix.Error, error);
 					msgEvent.returnData = error;
 					this.postMessage(msgEvent);
 				}
