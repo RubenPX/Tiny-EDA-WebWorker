@@ -30,12 +30,14 @@ export class ClientWorker {
 
 		const eventPromise = new Promise((resolve, reject) => {
 			// Timeout exception in processing
-			const timeout = setTimeout(() => reject(new ErrorEvent('Timeout exception')), 5000);
+			const timeout = setTimeout(() => reject(new ErrorEvent('Timeout exception')), 10000);
 
 			// Resolver
 			const eventListenMethod = (event: MessageEvent<EventMessage>) => {
 				if (event.data.id === eventMsg.id) {
-					resolve(event.data as EventMessage<input>);
+					if (event.data.returnData instanceof Error) reject(event.data.returnData);
+					else resolve(event.data as EventMessage<input>);
+
 					clearTimeout(timeout);
 					this.worker.removeEventListener('message', eventListenMethod);
 				}
@@ -65,25 +67,16 @@ export class ClientWorker {
 		return new ApiBuilder(route, this);
 	}
 
-	private static messageRecived(message: MessageEvent) {
+	private static messageRecived(message: MessageEvent<EventMessage>) {
 		const msgData = message.data;
 		const { context, method, returnData, id, requireObserver } = msgData;
 		if (typeof context === 'string' && typeof method === 'string') {
-			if (returnData instanceof Error) return ClientWorker.onError(returnData);
+			if (returnData instanceof Error) return;
 			if (requireObserver) {
 				console.debug(...ConsolePrefix.ObserverTriggered, { id: { id }, runner: `${context} → ${method}`, returnData });
 			} else {
 				console.debug(...ConsolePrefix.MsgIn, { id: { id }, runner: `${context} → ${method}`, returnData });
 			}
-		}
-	}
-
-	private static onError(data: ErrorEvent | Error | any) {
-		const { context, method, returnData, id } = data;
-		if (context && typeof context === 'string' && method && typeof method === 'string') {
-			console.error(...ConsolePrefix.MsgIn, { id: { id }, context, method }, '\n', returnData);
-		} else {
-			console.error(data);
 		}
 	}
 }

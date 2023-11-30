@@ -6,13 +6,15 @@ export const ConsoleColors = {
 	green  : 'color: #0d0; ',
 	blue   : 'color: #0af; ',
 	red    : 'color: #f20; ',
-	orange : 'color: #F80; '
+	orange : 'color: #F80; ',
+	purple : 'color: #d602ee; '
 };
 
 export const ConsolePrefix = {
 	MsgOut            : ['%c⮞', ConsoleColors.green + consoleDecorations.RoundedBorder('#0d0')],
 	MsgIn             : ['%c⮜', ConsoleColors.blue + consoleDecorations.RoundedBorder('#0af')],
 	Error             : ['%c⭙', ConsoleColors.red + consoleDecorations.RoundedBorder('#f20')],
-	ObserverRegister  : ['%c⭘', ConsoleColors.blue + consoleDecorations.RoundedBorder('#0af')],
-	ObserverTriggered : ['%c⊚', ConsoleColors.orange + consoleDecorations.RoundedBorder('#F80')]
+	RequireObserve    : ['%c⭘', ConsoleColors.blue + consoleDecorations.RoundedBorder('#d602ee')],
+	ObserverRegister  : ['%c⭘', ConsoleColors.green + consoleDecorations.RoundedBorder('#d602ee')],
+	ObserverTriggered : ['%c⊚', ConsoleColors.green + consoleDecorations.RoundedBorder('#d602ee')]
 };

@@ -1,5 +1,6 @@
 import { ConsoleColors, ConsolePrefix } from '../ConsoleColors';
 import { EventMessage } from './EventMessage';
+import { EventRouteError } from './EventRouteError';
 
 type eventRoute = { context: string, method: string, callback: ((message: EventMessage) => EventMessage | any)[] };
 
@@ -18,8 +19,12 @@ export abstract class AppMain {
 
 	public publish(event: EventMessage | MessageEvent): void {
 		if (event instanceof EventMessage) {
-			const { id, context, method } = event;
-			console.debug(...ConsolePrefix.MsgOut, { id: { id }, runner: `${context} → ${method}` });
+			const { id, context, method, requireObserver } = event;
+			if (requireObserver === true) {
+				console.debug(...ConsolePrefix.RequireObserve, { id: { id }, RequireObserve: `${context} → ${method}` });
+			} else {
+				console.debug(...ConsolePrefix.MsgOut, { id: { id }, runner: `${context} → ${method}` });
+			}
 
 			const foundEventRunners = this.eventRoutes.find(rt => rt.context === event.context && rt.method === event.method);
 			if (foundEventRunners) {
@@ -31,15 +36,23 @@ export abstract class AppMain {
 						this.postMessage(event);
 					}
 				});
+			} else {
+				throw new EventRouteError(`Route ${context} → ${method} is not defined or implemented`);
 			}
 		} else if (event instanceof MessageEvent) {
-			const data = event.data;
-			if (typeof data.context === 'string' && typeof data.method === 'string' && typeof data.requireObserver === 'boolean') {
-				const newEvent = new EventMessage(data.context, data.method, data.data);
-				newEvent.requireObserver = data.requireObserver;
-				newEvent.requireReturn = data.requireReturn;
-				if (data.id) newEvent.id = data.id;
-				this.publish(newEvent);
+			const msgEvent = event.data;
+			if (typeof msgEvent.context === 'string' && typeof msgEvent.method === 'string' && typeof msgEvent.requireObserver === 'boolean') {
+				const newEvent = new EventMessage(msgEvent.context, msgEvent.method, msgEvent.data);
+				newEvent.requireObserver = msgEvent.requireObserver;
+				newEvent.requireReturn = msgEvent.requireReturn;
+				if (msgEvent.id) newEvent.id = msgEvent.id;
+				try {
+					this.publish(newEvent);
+				} catch (error) {
+					console.error(...ConsolePrefix.Error, { error });
+					msgEvent.returnData = error;
+					this.postMessage(msgEvent);
+				}
 			} else {
 				throw new Error('Bad event formatted');
 			}

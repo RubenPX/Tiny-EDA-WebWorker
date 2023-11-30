@@ -14,9 +14,14 @@
   let num: number = 0;
   let numReactivo: number = 0;
 
-  function runError() {
+  async function runError() {
     let builder = cli.createBuilder(AppRoutes.runTestError);
-    new APIRunner(builder).run();
+    try {
+      let x = new APIRunner(builder);
+      await x.run();
+    } catch (error) {
+      console.log({ error });
+    }
   }
 
   function generateNumber(): number {

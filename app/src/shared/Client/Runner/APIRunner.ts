@@ -9,7 +9,7 @@ export class APIRunner<returnType, paramsType> {
 	}
 
 	async run(params?: paramsType): Promise<returnType | undefined> {
-		const eventReturn = await this.builder.client.postEventReturn(this.builder.route.context, this.builder.route.method, params);
-		return eventReturn.data as returnType | undefined;
+		const eventR = await this.builder.client.postEventReturn(this.builder.route.context, this.builder.route.method, params);
+		return eventR.returnData as returnType | undefined;
 	}
 }

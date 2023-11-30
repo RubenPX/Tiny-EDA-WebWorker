@@ -3,7 +3,7 @@ import { ClientRouteDefinition } from '../shared/Client/ClientRouteDefinition';
 import { TestError } from './app/TestError';
 
 const Definitions = {
-	runTestError: new ClientRouteDefinition<never, never>('TestApp', 'RunTestError')
+	runTestError: new ClientRouteDefinition<never, never>('TestApp', 'RunTestsError')
 };
 
 export class TestApp {
