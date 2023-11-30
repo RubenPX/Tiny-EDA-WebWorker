@@ -61,7 +61,7 @@ stateDiagram-v2
 
         is_observer --> observer
         observer --> worker_end
-        note left of observer : If observer detect\n value has changed\n it will trigger
+        note left of observer : If observer detects\n that target method\n has been executed\n it will trigger
 
         worker_end --> client_end
     }
