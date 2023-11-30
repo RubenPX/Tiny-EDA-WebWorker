@@ -9,7 +9,7 @@ const Definitions = {
 export class TestApp {
 	public readonly context: string = 'TestApp';
 	private constructor(public readonly main: AppMain) {}
-	public static readonly definitions = Definitions;
+	public static readonly routeDefinitions = Definitions;
 
 	private initialize() {
 		const _ = [

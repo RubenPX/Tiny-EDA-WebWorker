@@ -12,7 +12,7 @@ const Definitions = {
 export class CounterApp {
 	public readonly context: string = 'Counter';
 	private constructor(public readonly main: AppMain, public readonly counterRepo: CounterRepository) {}
-	public static readonly definitions = Definitions;
+	public static readonly routeDefinitions = Definitions;
 
 	private initialize() {
 		const _ = [

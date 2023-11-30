@@ -1,5 +1,5 @@
 import { TestApp } from '../../AppTest/AppTest';
-import { ConsoleColors, ConsolePrefix } from '../../ConsoleColors';
+import { ConsolePrefix } from '../../ConsoleColors';
 import { CounterApp } from '../../Counter/Counter';
 import { EventMessage } from '../EventMessage';
 import { ApiBuilder } from './Builder/APIBuilder';
@@ -8,8 +8,8 @@ import { ClientRouteDefinition } from './ClientRouteDefinition';
 export { APIRunner } from './Runner/APIRunner';
 
 export const AppRoutes = {
-	...TestApp.definitions,
-	...CounterApp.definitions
+	...TestApp.routeDefinitions,
+	...CounterApp.routeDefinitions
 };
 
 export class ClientWorker {
@@ -85,7 +85,7 @@ export class ClientWorker {
 	private static onError(data: ErrorEvent | Error | any) {
 		const { context, method, returnData, id } = data;
 		if (context && typeof context === 'string' && method && typeof method === 'string') {
-			console.error('%c⭙', ConsoleColors.red, { id: { id }, context, method }, '\n', returnData);
+			console.error(...ConsolePrefix.MsgIn, { id: { id }, context, method }, '\n', returnData);
 		} else {
 			console.error(data);
 		}
