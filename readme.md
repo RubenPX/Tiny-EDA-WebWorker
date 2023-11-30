@@ -9,6 +9,12 @@ La idea de este proyecto es crear un proyecto base donde se use una arquitectura
 
 Esta estructura de carpetas es una forma opinionada de como creo yo @RubenPX de cual es la forma que mejor me parece a la hora de estructurar las carpetas y el estilo de código.
 
+## ¿Porque pensar como una libreria a parte y no como una aplicación única?
+
+En realidad, la presentación (Frontend) es una aplicación que ejecuta la libreria, asi que en este caso, es facil ejecutar los metodos que nos interesa.
+
+Para que sea fácil para otros desarrolladores, he deccidido usar el patron Factory para construir las request. Esto tiene varias ventajas al respecto, siendo la mas importante que el desarrollador no tenga que preocuparse de como tiene hablar entre el navegador y el webworker. Ya esta todo hecho y con controles de errores en caso de que se descuide accidentalmente de controlar excepciones.
+
 ## Estructura de proyecto
 
 El proyecto esta dividido en 2 partes.
@@ -18,12 +24,6 @@ El proyecto esta dividido en 2 partes.
 
 > Aqui esta un concepto de como se reparte el codigo y sus carpetas. En este caso, la proposición es "Que capa eres y que eres"
 > ![Propuesta](CleanArchitectureFolderProposal.png)
-
-## ¿Porque pensar como una libreria a parte y no como una aplicación?
-
-En realidad, la presentación (Frontend) es una aplicación que ejecuta la libreria, asi que en este caso, es facil ejecutar los metodos que nos interesa.
-
-Para que sea fácil para otros desarrolladores, he deccidido usar el patron Factory para construir las request. Esto tiene varias ventajas al respecto, siendo la mas importante que el desarrollador no tenga que preocuparse de como tiene hablar entre el navegador y el webworker. Ya esta todo hecho y con controles de errores en caso de que se descuide accidentalmente de controlar excepciones.
 
 ## Funcionamiento de la aplicación
 
