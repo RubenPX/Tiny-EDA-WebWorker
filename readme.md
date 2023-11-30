@@ -77,7 +77,11 @@ class observer badBadEvent
 classDef badBadEvent fill:#058,color:white,font-weight:bold
 ```
 
+## Roadmap
 
-
-> [!note]
-> Descripción aun por terminar (Probablemente se hara en inglés)
+- [X] Enviar y recivir eventos entre el worker y el browser
+- [X] Usar promise a la hora de invocar eventos
+- [X] Permitir la observación de eventos
+- [X] Controlar los errores de la aplicación
+- [X] mejor logging en consola (Para ver los eventos, requiere que tengas verbose activado)
+- [ ] Enviar instancias de errores al cliente
