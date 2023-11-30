@@ -37,7 +37,7 @@ stateDiagram-v2
     note left of client_start : Send event to worker
 
     state worker_start <<join>>
-    note left of worker_start : Recive event to worker
+    note left of worker_start : Recive event from client
 
     state worker_end <<join>>
     note right of worker_end : Send event to client
