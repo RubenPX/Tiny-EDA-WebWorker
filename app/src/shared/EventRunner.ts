@@ -11,14 +11,14 @@ export abstract class EventRunner<returnType = any> {
 	}
 
 	private initialize() {
-		this.worker.onEvent(this.runnerMethod, (msg: EventMessage<returnType>) => {
+		this.worker.onEvent(this.runnerMethod, async(msg: EventMessage<returnType>) => {
 			if (this.worker.mode === 'client') this.clientRun();
 			else {
 				if (msg.requireObserver) {
 					this.observers.push(msg);
 					console.debug(...ConsolePrefix.ObserverRegister, `Observer attached to ${this.runnerMethod.context} → ${this.runnerMethod.method}`);
 				} else {
-					msg.returnData = this.run(msg);
+					msg.returnData = await this.run(msg);
 					this.worker.postMessage(msg);
 					this.postRun(msg.returnData);
 				}
