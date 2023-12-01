@@ -12,7 +12,7 @@ Esta estructura de carpetas es una forma opinionada de como creo yo @RubenPX de 
 
 En realidad, la presentación (Frontend) es una aplicación que ejecuta la librería, así que en este caso, es facil ejecutar los métodos que nos interesa.
 
-Para que sea fácil para otros desarrolladores, he decidido usar el patrón de código Factory para construir las request. Esto tiene varias ventajas al respecto, siendo la más importante que el desarrollador no tenga que preocuparse de cómo tiene hablar entre el navegador y el webworker. Toda la libreria esta realizada de modo se puedan recivir eventos (tanto de resultados como de errores)
+Para que sea fácil para otros desarrolladores, he decidido usar el patrón de código Factory para construir las request. Esto tiene varias ventajas al respecto, siendo la más importante que el desarrollador no tenga que preocuparse de cómo tiene hablar entre el navegador y el webworker. Toda la libreria esta realizada de modo se puedan recibir eventos (tanto de resultados como de errores)
 
 ## Estructura de proyecto
 
