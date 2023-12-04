@@ -1,29 +1,31 @@
 import { EventBus } from './Event/EventBus';
+import { EventError } from './Event/EventError';
 import { EventMessage } from './Event/EventMessage';
 
 export class ClientWorkerManager extends EventBus {
 	constructor(worker: Worker) {
 		super(worker);
-		this.postMessageReturn({ context: 'root', method: 'initialize' }).then(() => {
-			console.log('initialized!');
+		this.postMessageReturn({ context: 'root', method: 'initialize' }).then((ev) => {
+			console.log('initialized!', ev.returnData);
 		});
 	}
 
-	public postMessageReturn<rtnOut, eparams>(route: { context: string, method: string, params?: eparams }): Promise<EventMessage<rtnOut, eparams>> {
-		const newEvent = new EventMessage(route.context, route.method, route.params);
+	public postMessageReturn<rtnOut, eparams>(evMsg: { context: string, method: string, params?: eparams }) {
+		const newEvent = new EventMessage(evMsg.context, evMsg.method, evMsg.params);
 
 		const prom = new Promise((resolve, reject) => {
-			const evObserve = this.onMessage(route.context, route.method, (evMsg) => {
+			this.onMessage(newEvent.context, newEvent.method, (evMsg) => {
 				// Skip if id is not same as new event
-				if (evMsg.id === newEvent.id) return;
-
-				// Check if has error
-				if (!evMsg.error) resolve(evMsg);
-				else reject(evMsg);
+				if (evMsg.id !== newEvent.id) return;
 
 				// Unsuscribe
-				this.offMessage(evObserve);
-				this.offMessage(newEvent);
+				this.offMessage(evMsg);
+
+				// Check if has error
+				if (evMsg.error) throw new EventError(evMsg);
+
+				// Resolve with data
+				resolve(evMsg);
 			});
 		});
 

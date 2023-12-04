@@ -1,5 +1,4 @@
 import { EventBus } from './Event/EventBus';
-import { EventMessage } from './Event/EventMessage';
 
 export class WorkerManager extends EventBus {
 	constructor(worker: Worker) {

@@ -7,6 +7,7 @@ type EventMsgHandler<out, params> = {
 }
 
 export abstract class EventBus {
+	// eslint-disable-next-line no-undef
 	public isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
 
 	constructor(public manager: Worker) {
@@ -42,17 +43,17 @@ export abstract class EventBus {
 	public publish<rtnOut, eparams>(evMsg: EventMessage<rtnOut, eparams>) {
 		const findMethods = this.handlers.filter(h => h.msgEvent.context === evMsg.context && h.msgEvent.method === evMsg.method);
 		if (findMethods.length !== 0) {
-			try {
-				findMethods.forEach(async handler => {
-					const data = await handler.clbk(evMsg);
-					handler.msgEvent.returnData = data as rtnOut;
-					this.postMessage(handler.msgEvent);
-				});
-			} catch (error) {
-				evMsg.error = true;
-				evMsg.returnData = error as rtnOut;
-				this.postMessage(evMsg);
-			}
+			findMethods.forEach(async handler => {
+				try {
+					evMsg.returnData = await handler.clbk(evMsg) as rtnOut;
+					// this.postMessage(handler.msgEvent);
+					this.postMessage(evMsg);
+				} catch (error) {
+					evMsg.error = true;
+					evMsg.returnData = error as rtnOut;
+					this.postMessage(evMsg);
+				}
+			});
 		} else {
 			evMsg.error = true;
 			evMsg.returnData = new Error('Route not found') as rtnOut;
@@ -60,13 +61,13 @@ export abstract class EventBus {
 		}
 	}
 
-	protected onMessage<rtnOut, rparams>(context: string, method: string, clbk: EventBus['handlers'][number]['clbk']): EventMessage<rtnOut, rparams> {
-		const eventMsg = new EventMessage<rtnOut, rparams>(context, method);
-		this.handlers.push({ msgEvent: eventMsg, clbk });
-		return eventMsg;
-	}
-
 	public offMessage(eventMsg: EventMessage<any, any>): void {
 		this.handlers = this.handlers.filter(h => h.msgEvent.id !== eventMsg.id);
+	}
+
+	protected onMessage<rtnOut, eparams>(context: string, method: string, clbk: (msg: EventMessage<rtnOut, eparams>) => void) {
+		const newMessage = new EventMessage(context, method);
+		this.handlers.push({ msgEvent: newMessage, clbk });
+		return newMessage as EventMessage<rtnOut, eparams>;
 	}
 }
