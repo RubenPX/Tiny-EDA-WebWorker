@@ -1,10 +1,11 @@
 import { v4 } from 'uuid';
 
 export class EventMessage<out, eparams> {
-	public readonly id = v4();
+	public id = v4();
 
 	public returnData: out | undefined = undefined;
 	public error: boolean = false;
+	public resolved: boolean = false;
 
 	constructor(
 		public context: string,
@@ -13,9 +14,15 @@ export class EventMessage<out, eparams> {
 	) {}
 
 	public static parseMessageEvent<rtnOut, prms>(ev: MessageEvent<any>): EventMessage<rtnOut, prms> {
-		const { context, method, params, ...rest } = ev.data;
+		const { id, context, method, params, ...rest } = ev.data;
 		if (context && method) {
 			const msgEvent = new EventMessage(context, method, params);
+
+			// Parse extra params
+			msgEvent.id = id;
+			msgEvent.resolved = rest.resolved ?? false;
+			msgEvent.returnData = rest.returnData ?? undefined;
+
 			if (rest.error) msgEvent.error = rest.error;
 			return msgEvent as EventMessage<rtnOut, prms>;
 		} else {
@@ -31,18 +38,5 @@ export class EventMessage<out, eparams> {
 		msgEvent.error = true;
 		msgEvent.returnData = ev;
 		return msgEvent;
-	}
-}
-
-export class ErrorEventMessage extends EventMessage<Error, any> {
-	public readonly error = true;
-
-	constructor(
-		public readonly returnData: Error,
-		public context: string,
-		public method: string,
-		public params?: any
-	) {
-		super(context, method, params);
 	}
 }

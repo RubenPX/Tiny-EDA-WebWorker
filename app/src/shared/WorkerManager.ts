@@ -4,18 +4,15 @@ import { EventMessage } from './Event/EventMessage';
 export class WorkerManager extends EventBus {
 	constructor(worker: Worker) {
 		super(worker);
-		this.onMessage('root', 'initialize', () => this.initialize());
+		this.onMessage('root', 'initialize', this.initialize);
 	}
 
 	private async initialize() {
-		const msg = new EventMessage('root', 'initialize');
-		msg.returnData = 'ok';
-		await new Promise((resolve, reject) => {
+		return await new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve(undefined);
-			}, 1000);
+				resolve('ok');
+			}, 2000);
 		});
-		this.postMessage(msg);
 	}
 }
 

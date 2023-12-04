@@ -13,10 +13,16 @@ export class ClientWorkerManager extends EventBus {
 		const newEvent = new EventMessage(route.context, route.method, route.params);
 
 		const prom = new Promise((resolve, reject) => {
-			this.onMessage(newEvent.context, newEvent.method, (evMsg) => {
-				if (evMsg.error) reject(evMsg);
-				else resolve(evMsg);
+			const evObserve = this.onMessage(route.context, route.method, (evMsg) => {
+				// Skip if id is not same as new event
+				if (evMsg.id === newEvent.id) return;
 
+				// Check if has error
+				if (!evMsg.error) resolve(evMsg);
+				else reject(evMsg);
+
+				// Unsuscribe
+				this.offMessage(evObserve);
 				this.offMessage(newEvent);
 			});
 		});
@@ -30,7 +36,6 @@ export class ClientWorkerManager extends EventBus {
 		const newEvent = new EventMessage(route.context, route.method, route.params);
 
 		this.onMessage(newEvent.context, newEvent.method, clbk);
-		this.postMessage(newEvent);
 
 		return newEvent as EventMessage<rtnOut, eparams>;
 	}

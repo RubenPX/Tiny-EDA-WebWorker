@@ -1,3 +1,4 @@
+import { ConsolePrefix } from '../ConsoleColors';
 import { EventMessage } from './EventMessage';
 
 type EventMsgHandler<out, params> = {
@@ -6,6 +7,8 @@ type EventMsgHandler<out, params> = {
 }
 
 export abstract class EventBus {
+	public isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+
 	constructor(public manager: Worker) {
 		manager.addEventListener('message', (ev) => this.onWorkerMessage(ev));
 		manager.addEventListener('error', (ev) => this.onWorkerError(ev));
@@ -13,32 +16,47 @@ export abstract class EventBus {
 	}
 
 	private onWorkerMessage(ev: MessageEvent<any>) {
-		console.log(self.constructor.name, 'in');
 		const msg = EventMessage.parseMessageEvent(ev);
+		if (msg.resolved && this.isWorker) return;
 		this.publish(msg);
 	}
 
 	private onWorkerError(ev: ErrorEvent) {
-		console.log(self.constructor.name, 'err');
 		const msg = EventMessage.parseErrorEvent(ev);
+		if (msg.resolved && this.isWorker) return;
 		this.publish(msg);
 	}
 
-	public postMessage<rtnOut, eparams>(eventMsg: EventMessage<rtnOut, eparams>) {
-		this.manager.postMessage(eventMsg);
+	public postMessage<rtnOut, eparams>(msg: EventMessage<rtnOut, eparams>) {
+		if (msg.resolved) return;
+
+		// If request is resolved as webworker, event is marked as resolved
+		if (this.isWorker) msg.resolved = true;
+
+		console.log(...ConsolePrefix.Msg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
+		this.manager.postMessage(msg);
 	}
 
 	private handlers: EventMsgHandler<any, any>[] = [];
 
-	public publish<rtnOut, eparams>(eventMsg: EventMessage<rtnOut, eparams>) {
-		const findMethods = this.handlers.filter(h => h.msgEvent.context === eventMsg.context && h.msgEvent.method === eventMsg.method);
+	public publish<rtnOut, eparams>(evMsg: EventMessage<rtnOut, eparams>) {
+		const findMethods = this.handlers.filter(h => h.msgEvent.context === evMsg.context && h.msgEvent.method === evMsg.method);
 		if (findMethods.length !== 0) {
-			findMethods.forEach(async ev => {
-				ev.msgEvent.returnData = await ev.clbk(eventMsg) as rtnOut;
-			});
+			try {
+				findMethods.forEach(async handler => {
+					const data = await handler.clbk(evMsg);
+					handler.msgEvent.returnData = data as rtnOut;
+					this.postMessage(handler.msgEvent);
+				});
+			} catch (error) {
+				evMsg.error = true;
+				evMsg.returnData = error as rtnOut;
+				this.postMessage(evMsg);
+			}
 		} else {
-			eventMsg.error = true;
-			eventMsg.returnData = new Error('Route not found') as rtnOut;
+			evMsg.error = true;
+			evMsg.returnData = new Error('Route not found') as rtnOut;
+			this.postMessage(evMsg);
 		}
 	}
 
