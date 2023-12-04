@@ -1,6 +1,12 @@
+import { CounterFeature } from '../Counter/CounterFeature';
 import { EventBus } from './Event/EventBus';
 import { EventError } from './Event/EventError';
 import { EventMessage } from './Event/EventMessage';
+
+export const clientRoutes = {
+	// @ts-expect-error This never will be initialized
+	Counter: new CounterFeature(undefined).getRoutes()
+};
 
 export class ClientWorkerManager extends EventBus {
 	constructor(worker: Worker) {

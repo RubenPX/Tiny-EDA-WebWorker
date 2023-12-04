@@ -1,8 +1,16 @@
 <script lang="ts">
   import worker from "@eda/app/src/shared/WorkerManager?worker";
-  import { ClientWorkerManager } from "@eda/app/src/shared/ClientWorkerManager";
+  import {
+    ClientWorkerManager,
+    clientRoutes,
+  } from "@eda/app/src/shared/ClientWorkerManager";
+  import { onMount } from "svelte";
 
   let app = new ClientWorkerManager(new worker());
+
+  onMount(() => {
+    console.log(clientRoutes.Counter.GetCount(undefined));
+  });
 </script>
 
 <main style="display: flex; width: 100%">

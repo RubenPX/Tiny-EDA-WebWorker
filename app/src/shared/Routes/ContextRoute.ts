@@ -3,7 +3,7 @@ import { EventRunner } from './EventRunner';
 
 // eslint-disable-next-line no-use-before-define
 type reduceType<repo, ctx extends ContextRoute<repo>> = {
-	[key in keyof ctx['EventRoutes']]: <out, eParams>(params: eParams) => EventMessage<out, eParams>
+	[key in keyof ctx['EventRoutes']]: <rOut, eParams>(params: eParams) => EventMessage<rOut, eParams>
 }
 
 export abstract class ContextRoute<repos> {
@@ -22,9 +22,10 @@ export abstract class ContextRoute<repos> {
 	}
 
 	public getRoutes(): reduceType<repos, this> {
-		return Object.keys(this.EventRoutes).reduce((arr: reduceType<repos>, v: string) => {
+		return Object.keys(this.EventRoutes).reduce((arr: reduceType<repos, this>, v: string) => {
+			// @ts-expect-error
 			arr[v] = <eParams>(params: eParams) => new EventMessage(this.contextName, v, params);
 			return arr;
-		}, {});
+		}, {} as reduceType<repos, this>);
 	}
 }
