@@ -1,20 +1,17 @@
 import { EventBus } from '../Event/EventBus';
 import { EventMessage } from '../Event/EventMessage';
 
-export class EventRunner<out = any, Rparams = any> {
+export class EventRunner<out = any, eParams = any, repx = any> {
 	constructor(
-		private bus: EventBus,
-		public context: string,
-		public method: string,
-		public run: ((params: Rparams) => out)
+		public repo: repx,
+		public run: (repos: repx, params?: eParams) => Promise<out>
 	) {}
 
-	public clientRoute(params: Rparams | undefined = undefined) {
-		const msg = new EventMessage(this.context, this.method, params);
-		this.bus.postMessage(msg);
+	public async runMethod(ev: EventMessage<out, eParams>): Promise<out> {
+		return await this.run(this.repo, ev.params);
 	}
 
-	public static prepareEvent(method: string, executor: EventRunner['run']) {
-		return (bus: EventBus, context: string) => new EventRunner(bus, context, method, executor);
+	public static prepareEvent<out, Rparams, repo>(executor: ((repo: repo, params?: Rparams) => Promise<out>)) {
+		return (repoData: repo) => new EventRunner<out, Rparams, repo>(repoData, executor);
 	}
 }

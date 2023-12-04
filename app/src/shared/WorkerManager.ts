@@ -1,6 +1,11 @@
+import { CounterMemory } from '../Counter/infrastructure/CounterMemory';
 import { EventBus } from './Event/EventBus';
 
 export class WorkerManager extends EventBus {
+	public readonly repos = {
+		counter: new CounterMemory()
+	};
+
 	constructor(worker: Worker) {
 		super(worker);
 		this.onMessage('root', 'initialize', this.initialize);
