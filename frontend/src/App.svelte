@@ -1,54 +1,8 @@
 <script lang="ts">
-  import worker from "app-counter/src/Worker?worker";
+  import worker from "@eda/app/src/shared/WorkerManager?worker";
+  import { ClientWorkerManager } from "@eda/app/src/shared/ClientWorkerManager";
 
-  import {
-    APIRunner,
-    AppRoutes,
-    ClientWorker,
-  } from "app-counter/src/shared/Client/ClientWorker";
-  import { onMount } from "svelte";
-  import type { EventMessage } from "app-counter/src/shared/EventMessage";
-
-  let cli = new ClientWorker(new worker());
-
-  let num: number = 0;
-  let numReactivo: number = 0;
-
-  async function runError() {
-    let builder = cli.createBuilder(AppRoutes.runTestError);
-    try {
-      let x = new APIRunner(builder);
-      await x.run();
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-
-  function generateNumber(): number {
-    return parseInt(Math.random() * 100 + "");
-  }
-
-  async function randomizeGET() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
-    num = (await runner.run(generateNumber())) ?? -1;
-  }
-
-  async function randomizeSET() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
-    await runner.run(generateNumber());
-  }
-
-  onMount(initializeReactive);
-  function initializeReactive() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
-
-    runner.observe((ev: EventMessage<number>) => {
-      if (ev.returnData !== undefined) numReactivo = ev.returnData;
-    });
-  }
+  let app = new ClientWorkerManager(new worker());
 </script>
 
 <main style="display: flex; width: 100%">
@@ -56,7 +10,7 @@
     It's necessary to see console to view worker events
   </u>
 
-  <div style="display: flex; align-items: center;">
+  <!-- <div style="display: flex; align-items: center;">
     <button style="margin: 10px;" on:click={randomizeSET}>
       Randomize ASync
     </button>
@@ -74,7 +28,7 @@
     </h3>
   </div>
 
-  <button on:click={runError} style="margin: 10px;"> Run test error </button>
+  <button on:click={runError} style="margin: 10px;"> Run test error </button> -->
 </main>
 
 <style>

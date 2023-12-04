@@ -50,7 +50,7 @@ importers:
 
   frontend:
     dependencies:
-      app-counter:
+      '@eda/app':
         specifier: workspace:^
         version: link:../app
     devDependencies:
