@@ -1,3 +1,4 @@
+import { ClientRouteDefinition } from '../Client/ClientWorkerManager';
 import { EventMessage } from '../Event/EventMessage';
 
 export class EventRunner<rOut = any, eParams = any, repx = any> {

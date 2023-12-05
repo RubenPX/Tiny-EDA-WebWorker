@@ -4,7 +4,10 @@ import { EventRunner } from './EventRunner';
 
 // eslint-disable-next-line no-use-before-define
 type clientDefs<ctx extends ContextRoute<any>> = {
-	[key in keyof ctx['EventRoutes']]: ClientRouteDefinition<any, any>
+	[key in keyof ctx['EventRoutes']]:
+		ctx['EventRoutes'][key] extends EventRunner<infer returnType, infer paramsType>
+			? ClientRouteDefinition<returnType, paramsType>
+			: never
 }
 
 export abstract class ContextRoute<repos> {

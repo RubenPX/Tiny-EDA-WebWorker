@@ -50,8 +50,6 @@ stateDiagram-v2
         ...observer --> [*]: observer2
         ...observer --> [*]: observer...
     }
-
-    
 ```
 
 ## Roadmap

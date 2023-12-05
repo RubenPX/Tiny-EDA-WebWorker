@@ -20,7 +20,7 @@
   async function runWithReturn() {
     const builder = new APIBuilder(clientRoutes.Counter.SetCount, app);
     const runner = new APIRunner(builder);
-    num = await runner.run(getRandomNumber());
+    num = (await runner.run(getRandomNumber())) ?? -1;
   }
 
   async function runWithSet() {
@@ -41,7 +41,7 @@
     // Getting first value
     const builder = new APIBuilder(clientRoutes.Counter.GetCount, app);
     const runner = new APIRunner(builder);
-    numReactivo = await runner.run();
+    numReactivo = (await runner.run()) ?? -1;
 
     // Example observer
     const b2 = new APIBuilder(clientRoutes.Counter.SetCount, app);
