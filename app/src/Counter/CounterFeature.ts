@@ -3,7 +3,8 @@ import { ErrorCount } from './app/ErrorCount';
 
 import { GetCount } from './app/GetCount';
 import { SetCount } from './app/SetCount';
-import { ConterRepository } from './domain/ConterRepository';
+
+import type { ConterRepository } from './domain/ConterRepository';
 
 export class CounterFeature extends ContextRoute<ConterRepository> {
 	protected contextName: string = 'Counter';

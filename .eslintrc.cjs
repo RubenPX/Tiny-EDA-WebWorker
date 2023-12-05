@@ -1,5 +1,5 @@
 module.exports = {
-	extends : ['eslint:recommended', 'semistandard', 'standard'],
+	extends : ['eslint:recommended', 'standard'],
 	env     : { browser: true },
 	parser  : '@typescript-eslint/parser',
 	// parserOptions : { project: '*/tsconfig.json', sourceType: 'module' },
@@ -12,8 +12,16 @@ module.exports = {
 		'space-before-function-paren' : ['error', 'never'],
 		semi                          : [2, 'always'],
 		'key-spacing'                 : ['error', { align: { beforeColon: true, afterColon: true, on: 'colon' } }],
-		'no-unused-vars'              : 'off',
+		'no-unused-vars'              : 'warn',
 		'newline-per-chained-call'    : ['error', { ignoreChainWithDepth: 4 }],
-		'max-len'                     : [1, { code: 150 }]
+		'max-len'                     : ['error', { code: 150 }],
+		'no-async-promise-executor'   : 'off',
+		'sort-imports'                : ['error', {
+			ignoreCase            : false,
+			ignoreDeclarationSort : false,
+			ignoreMemberSort      : false,
+			memberSyntaxSortOrder : ['all', 'multiple', 'single', 'none'],
+			allowSeparatedGroups  : true
+		}]
 	}
 };

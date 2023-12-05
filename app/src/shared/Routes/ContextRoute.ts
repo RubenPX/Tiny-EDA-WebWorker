@@ -1,4 +1,4 @@
-import { ClientRouteDefinition } from '../Client/APIBuilder';
+import type { ClientRouteDefinition } from '../Client/APIBuilder';
 import { EventMessage } from '../Event/EventMessage';
 import { EventRunner } from './EventRunner';
 

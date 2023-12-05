@@ -1,4 +1,4 @@
-import { ConterRepository } from '../domain/ConterRepository';
+import type { ConterRepository } from '../domain/ConterRepository';
 
 export class CounterMemory implements ConterRepository {
 	private num: number = this.getRandomNumber();

@@ -1,7 +1,7 @@
+import { ContextRoute } from './Routes/ContextRoute';
 import { CounterFeature } from '../Counter/CounterFeature';
 import { CounterMemory } from '../Counter/infrastructure/CounterMemory';
 import { EventBus } from './Event/EventBus';
-import { ContextRoute } from './Routes/ContextRoute';
 
 export class WorkerManager extends EventBus {
 	public readonly repos = {

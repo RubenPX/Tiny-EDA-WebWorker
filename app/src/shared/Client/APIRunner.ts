@@ -1,5 +1,5 @@
-import { EventMessage } from '../Event/EventMessage';
 import { APIBuilder } from './APIBuilder';
+import { EventMessage } from '../Event/EventMessage';
 
 export class APIRunner<returnType, paramsType> {
 	constructor(private builder: APIBuilder<returnType, paramsType>) {}

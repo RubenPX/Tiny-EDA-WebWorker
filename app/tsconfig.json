@@ -8,7 +8,8 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "lib": ["ES2023", "WebWorker"]
+    "lib": ["ES2023", "WebWorker"],
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

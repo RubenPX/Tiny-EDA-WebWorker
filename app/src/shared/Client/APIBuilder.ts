@@ -1,5 +1,6 @@
 import { ClientWorkerManager } from './ClientWorkerManager';
 
+// eslint-disable-next-line no-unused-vars
 export type ClientRouteDefinition<returnType, paramsType> = { context: string, method: string, params?: paramsType }
 
 export class APIBuilder<returnType, paramsType> {
