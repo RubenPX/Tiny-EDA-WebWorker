@@ -15,7 +15,7 @@ export class CounterFeature extends ContextRoute<ConterRepository> {
 		ErrorCount : ErrorCount(this.repos)
 	} as const;
 
-	constructor(protected repos: ConterRepository) {
+	constructor(protected repos?: ConterRepository) {
 		super();
 	}
 }

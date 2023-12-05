@@ -1,7 +1,10 @@
-import { ContextRoute } from './Routes/ContextRoute';
+import { ContextRoute, type clientDefs } from './Routes/ContextRoute';
 import { CounterFeature } from '../Counter/CounterFeature';
 import { CounterMemory } from '../Counter/infrastructure/CounterMemory';
 import { EventBus } from './Event/EventBus';
+
+// eslint-disable-next-line no-use-before-define
+type clientRoutesType = { [key in keyof WorkerManager['routes']]: clientDefs<WorkerManager['routes'][key]> }
 
 export class WorkerManager extends EventBus {
 	public readonly repos = {
@@ -25,6 +28,14 @@ export class WorkerManager extends EventBus {
 		});
 		return 'OK';
 	}
+
+	public static getClientRoutes(): clientRoutesType {
+		return Object.entries(this.publicRoutes).reduce((arr: clientRoutesType, [ctxName, ctx]) => {
+		  // @ts-ignore
+		  arr[ctxName] = ctx.getRoutes();
+		  return arr;
+		}, {} as clientRoutesType);
+	  }
 }
 
 // eslint-disable-next-line no-undef

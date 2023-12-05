@@ -3,7 +3,7 @@ import { EventMessage } from '../Event/EventMessage';
 import { EventRunner } from './EventRunner';
 
 // eslint-disable-next-line no-use-before-define
-type clientDefs<ctx extends ContextRoute<any>> = {
+export type clientDefs<ctx extends ContextRoute<any>> = {
 	[key in keyof ctx['EventRoutes']]:
 		ctx['EventRoutes'][key] extends EventRunner<infer returnType, infer paramsType>
 			? ClientRouteDefinition<returnType, paramsType>
@@ -12,10 +12,12 @@ type clientDefs<ctx extends ContextRoute<any>> = {
 
 export abstract class ContextRoute<repos> {
 	public abstract readonly EventRoutes: { [key: string]: EventRunner }
-	protected abstract readonly repos: repos;
+	protected abstract readonly repos?: repos;
 	protected abstract contextName: string;
 
 	public async runEvent<rOut, eParams>(evMsg: EventMessage<rOut, eParams>): Promise<EventMessage<rOut, eParams>> {
+		if (this.repos == null) throw new Error('Can not run event in client-side');
+
 		const foundMethod = Object.entries(this.EventRoutes).find(([method]) => method === evMsg.method);
 		if (!foundMethod) throw new Error('Method not found');
 
