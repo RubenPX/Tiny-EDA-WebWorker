@@ -1,4 +1,3 @@
-import { EventBus } from '../Event/EventBus';
 import { EventMessage } from '../Event/EventMessage';
 
 export class EventRunner<rOut = any, eParams = any, repx = any> {

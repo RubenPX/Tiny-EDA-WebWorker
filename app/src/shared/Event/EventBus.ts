@@ -36,7 +36,7 @@ export abstract class EventBus {
 		// If request is resolved as webworker, event is marked as resolved
 		if (this.isWorker) msg.resolved = true;
 
-		console.log(...ConsolePrefix.Msg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
+		console.debug(...ConsolePrefix.Msg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
 		this.manager.postMessage(msg);
 	}
 
@@ -48,7 +48,6 @@ export abstract class EventBus {
 			findMethods.forEach(async handler => {
 				try {
 					evMsg.returnData = await handler.clbk(evMsg) as rtnOut;
-					// this.postMessage(handler.msgEvent);
 					this.postMessage(evMsg);
 				} catch (error) {
 					evMsg.error = true;

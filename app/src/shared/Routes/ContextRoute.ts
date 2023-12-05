@@ -1,9 +1,10 @@
+import { ClientRouteDefinition } from '../Client/APIBuilder';
 import { EventMessage } from '../Event/EventMessage';
 import { EventRunner } from './EventRunner';
 
 // eslint-disable-next-line no-use-before-define
-type reduceType<repo, ctx extends ContextRoute<repo>> = {
-	[key in keyof ctx['EventRoutes']]: <rOut = any, eParams = any>(params?: eParams) => EventMessage<rOut, eParams>
+type clientDefs<ctx extends ContextRoute<any>> = {
+	[key in keyof ctx['EventRoutes']]: ClientRouteDefinition<any, any>
 }
 
 export abstract class ContextRoute<repos> {
@@ -21,11 +22,11 @@ export abstract class ContextRoute<repos> {
 		return evMsg;
 	}
 
-	public getRoutes(): reduceType<repos, this> {
-		return Object.keys(this.EventRoutes).reduce((arr: reduceType<repos, this>, v: string) => {
-			// @ts-expect-error
-			arr[v] = <rOut, eParams>(params?: eParams) => new EventMessage(this.contextName, v, params) as rOut;
+	public getRoutes(): clientDefs<this> {
+		return Object.entries(this.EventRoutes).reduce((arr: clientDefs<this>, [method, ctx]) => {
+			// @ts-ignore
+			arr[method] = { context: this.contextName, method };
 			return arr;
-		}, {} as reduceType<repos, this>);
+		}, {} as clientDefs<this>);
 	}
 }
