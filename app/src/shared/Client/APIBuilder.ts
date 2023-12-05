@@ -1,14 +1,14 @@
-import { AppMain } from '../../AppMain';
-import { ClientRouteDefinition } from '../ClientRouteDefinition';
-import { ClientWorker } from '../ClientWorker';
+import { ClientWorkerManager } from './ClientWorkerManager';
 
-export class ApiBuilder<returnType, paramsType> {
+export type ClientRouteDefinition<returnType, paramsType> = { context: string, method: string, params?: paramsType }
+
+export class APIBuilder<returnType, paramsType> {
 	private filters: { [key: string]: (objeto: any) => boolean } = {};
 	private sorter: ((a: any, b: any) => -1 | 0 | 1) | null = null;
 
 	constructor(
 		public readonly route: ClientRouteDefinition<returnType, paramsType>,
-		public readonly client: ClientWorker
+		public readonly client: ClientWorkerManager
 	) {}
 
 	setFilter(filterName: string, filterFunction: (objeto: any) => boolean) {

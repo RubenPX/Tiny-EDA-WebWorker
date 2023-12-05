@@ -1,54 +1,57 @@
 <script lang="ts">
-  import worker from "app-counter/src/Worker?worker";
-
+  import worker from "@eda/app/src/shared/WorkerManager?worker";
   import {
+    ClientWorkerManager,
+    clientRoutes,
+    APIBuilder,
     APIRunner,
-    AppRoutes,
-    ClientWorker,
-  } from "app-counter/src/shared/Client/ClientWorker";
+  } from "@eda/app/src/shared/Client/ClientWorkerManager";
   import { onMount } from "svelte";
-  import type { EventMessage } from "app-counter/src/shared/EventMessage";
 
-  let cli = new ClientWorker(new worker());
+  let app = new ClientWorkerManager(new worker());
 
-  let num: number = 0;
-  let numReactivo: number = 0;
+  let num = NaN;
+  let numReactivo = NaN;
 
-  async function runError() {
-    let builder = cli.createBuilder(AppRoutes.runTestError);
-    try {
-      let x = new APIRunner(builder);
-      await x.run();
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-
-  function generateNumber(): number {
+  function getRandomNumber(): number {
     return parseInt(Math.random() * 100 + "");
   }
 
-  async function randomizeGET() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
-    num = (await runner.run(generateNumber())) ?? -1;
+  async function runWithReturn() {
+    const builder = new APIBuilder(clientRoutes.Counter.SetCount, app);
+    const runner = new APIRunner(builder);
+    num = await runner.run(getRandomNumber());
   }
 
-  async function randomizeSET() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
-    await runner.run(generateNumber());
+  async function runWithSet() {
+    const builder = new APIBuilder(clientRoutes.Counter.SetCount, app);
+    const runner = new APIRunner(builder);
+    await runner.run(getRandomNumber());
   }
 
-  onMount(initializeReactive);
-  function initializeReactive() {
-    let builder = cli.createBuilder(AppRoutes.setCount);
-    let runner = new APIRunner(builder);
+  async function runError() {
+    const builder = new APIBuilder(clientRoutes.Counter.ErrorCount, app);
+    new APIRunner(builder)
+      .run()
+      .then(() => console.log("Oh oh"))
+      .catch(() => console.log("Yeah one error!!!"));
+  }
 
-    runner.observe((ev: EventMessage<number>) => {
-      if (ev.returnData !== undefined) numReactivo = ev.returnData;
+  // app.observe(clientRoutes.Counter.SetCount(), (ev) => {
+  //   numReactivo = ev.returnData;
+  // });
+
+  onMount(async () => {
+    const builder = new APIBuilder(clientRoutes.Counter.GetCount, app);
+    const runner = new APIRunner(builder);
+    numReactivo = await runner.run();
+
+    const b2 = new APIBuilder(clientRoutes.Counter.SetCount, app);
+    const r2 = new APIRunner(b2);
+    r2.observe((evMsg) => {
+      numReactivo = evMsg.returnData ?? -1;
     });
-  }
+  });
 </script>
 
 <main style="display: flex; width: 100%">
@@ -57,8 +60,8 @@
   </u>
 
   <div style="display: flex; align-items: center;">
-    <button style="margin: 10px;" on:click={randomizeSET}>
-      Randomize ASync
+    <button style="margin: 10px;" on:click={runWithSet}>
+      Randomize Observe
     </button>
     <h3 style="text-align: left; padding: 0; margin: 0;">
       Reactivo: {numReactivo}
@@ -66,15 +69,15 @@
   </div>
 
   <div style="display: flex; align-items: center;">
-    <button style="margin: 10px;" on:click={randomizeGET}>
-      Randomize Sync
+    <button style="margin: 10px;" on:click={runWithReturn}>
+      Randomize Set
     </button>
     <h3 style="text-align: left; padding: 0; margin: 0;">
       Return: {num}
     </h3>
   </div>
 
-  <button on:click={runError} style="margin: 10px;"> Run test error </button>
+  <button style="margin: 10px;" on:click={runError}> Run test error </button>
 </main>
 
 <style>

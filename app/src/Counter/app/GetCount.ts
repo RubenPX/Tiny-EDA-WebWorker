@@ -1,14 +1,6 @@
-import { AppMain } from '../../shared/AppMain';
-import { EventMessage } from '../../shared/EventMessage';
-import { EventRunner } from '../../shared/EventRunner';
-import { CounterRepository } from './CounterRepository';
+import { EventRunner } from '../../shared/Routes/EventRunner';
+import { ConterRepository } from '../domain/ConterRepository';
 
-export class GetCount extends EventRunner<number> {
-	constructor(main: AppMain, context: string, public counterRepo: CounterRepository) {
-		super(main, { context, method: 'GetCount' });
-	}
-
-	protected run(messageEvent: EventMessage<number>): number {
-		return this.counterRepo.getCount();
-	}
-}
+export const GetCount = EventRunner.prepareEvent<number, undefined, ConterRepository>(async(repo) => {
+	return repo.get();
+});

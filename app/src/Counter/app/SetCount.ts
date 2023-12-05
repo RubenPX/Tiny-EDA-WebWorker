@@ -1,17 +1,8 @@
-import { ConsoleColors } from '../../ConsoleColors';
-import { AppMain } from '../../shared/AppMain';
-import { EventMessage } from '../../shared/EventMessage';
-import { EventRunner } from '../../shared/EventRunner';
-import { CounterRepository } from './CounterRepository';
+import { EventRunner } from '../../shared/Routes/EventRunner';
+import { ConterRepository } from '../domain/ConterRepository';
 
-export class SetCount extends EventRunner<number> {
-	constructor(main: AppMain, context: string, public counterRepo: CounterRepository) {
-		super(main, { context, method: 'SetCount' });
-	}
-
-	protected run(messageEvent: EventMessage<number, number>): number {
-		if (messageEvent.data == null) throw new Error('Param required to set a number');
-		this.counterRepo.setCount(messageEvent.data);
-		return this.counterRepo.getCount();
-	}
-}
+export const SetCount = EventRunner.prepareEvent<number, number, ConterRepository>(async(repo, params) => {
+	if (typeof params !== 'number') throw new Error('Required param number');
+	const newNumber = await repo.set(params);
+	return newNumber;
+});

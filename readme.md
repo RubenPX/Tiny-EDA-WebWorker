@@ -27,7 +27,7 @@ El proyecto está dividido en 2 partes.
 
 ## Funcionamiento de la aplicación
 
-El objetivo de este repositorio es unicamente dejar en un hilo a parte el procesamiento de datos. Para ello se "simula un servidor" en forma de WebWorker.
+El objetivo de este repositorio es unicamente dejar en un hilo a parte el procesamiento de datos. Para ello se simula un "servidor" en forma de WebWorker.
 
 Aquá debajo, se define como se comunica el cliente (Navegador) con el Hilo a parte ([WebWorker](https://developer.mozilla.org/es/docs/Web/API/Web_Workers_API/Using_web_workers)).
 
@@ -79,8 +79,6 @@ classDef badBadEvent fill:#058,color:white,font-weight:bold
 ## Roadmap
 
 - [X] Enviar y recibir eventos entre el worker y el browser
-- [X] Usar promise a la hora de invocar eventos
 - [X] Permitir la observación de eventos
 - [X] Controlar los errores de la aplicación
 - [X] logs mejorados en consola (Para ver los eventos, requiere que tengas verbose activado)
-- [ ] Enviar instancias de errores al cliente

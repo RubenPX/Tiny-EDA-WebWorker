@@ -10,9 +10,13 @@ export const ConsoleColors = {
 	purple : 'color: #d602ee; '
 };
 
+// eslint-disable-next-line no-undef
+const isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+
 export const ConsolePrefix = {
-	MsgOut            : ['%c⮞', ConsoleColors.green + consoleDecorations.RoundedBorder('#0d0')],
-	MsgIn             : ['%c⮜', ConsoleColors.blue + consoleDecorations.RoundedBorder('#0af')],
+	Msg: isWorker
+		? ['%c⮜W', ConsoleColors.green + consoleDecorations.RoundedBorder('#0d0')]
+		: ['%cC⮞', ConsoleColors.blue + consoleDecorations.RoundedBorder('#0af')],
 	Error             : ['%c⭙', ConsoleColors.red + consoleDecorations.RoundedBorder('#f20')],
 	RequireObserve    : ['%c⭘', ConsoleColors.blue + consoleDecorations.RoundedBorder('#d602ee')],
 	ObserverRegister  : ['%c⭘', ConsoleColors.green + consoleDecorations.RoundedBorder('#d602ee')],
