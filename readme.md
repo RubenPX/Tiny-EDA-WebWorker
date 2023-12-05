@@ -33,47 +33,25 @@ Aquá debajo, se define como se comunica el cliente (Navegador) con el Hilo a pa
 
 ```mermaid
 stateDiagram-v2
-    state client_start <<fork>>
-    note left of client_start : Send event to worker
-
-    state worker_start <<join>>
-    note left of worker_start : Recive event from client
-
-    state worker_end <<join>>
-    note right of worker_end : Send event to client
-
-    state client_end <<fork>>
-    note right of client_end : Recive event from worker
-    
-    %% Request flow
-
-    [*] --> client_start: Request 
-    
     state client {
-        client_start --> worker_start
+        [*] --> preparedEvent: Builded request 
+        preparedEvent --> processed
     }
 
-    state is_observer <<choice>>
+    state ...observer <<fork>>
 
     state Worker {
-        worker_start --> is_observer: is observer?
-        is_observer --> worker_end
-
-        is_observer --> observer
-        observer --> worker_end
-        note left of observer : If observer detects\n that target method\n has been executed\n it will trigger
-
-        worker_end --> client_end
+        processed --> ...observer: Spread event
     }
 
     state client {
-        client_end
+        ...observer --> [*]: Return to event source
+        ...observer --> [*]: observer1
+        ...observer --> [*]: observer2
+        ...observer --> [*]: observer...
     }
 
-    client_end --> [*]: Response
-
-class observer badBadEvent
-classDef badBadEvent fill:#058,color:white,font-weight:bold
+    
 ```
 
 ## Roadmap

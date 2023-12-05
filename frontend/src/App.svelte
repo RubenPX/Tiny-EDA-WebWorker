@@ -34,22 +34,20 @@
     new APIRunner(builder)
       .run()
       .then(() => console.log("Oh oh"))
-      .catch(() => console.log("Yeah one error!!!"));
+      .catch(() => console.error("Yeah one error!!!"));
   }
 
-  // app.observe(clientRoutes.Counter.SetCount(), (ev) => {
-  //   numReactivo = ev.returnData;
-  // });
-
   onMount(async () => {
+    // Getting first value
     const builder = new APIBuilder(clientRoutes.Counter.GetCount, app);
     const runner = new APIRunner(builder);
     numReactivo = await runner.run();
 
+    // Example observer
     const b2 = new APIBuilder(clientRoutes.Counter.SetCount, app);
     const r2 = new APIRunner(b2);
     r2.observe((evMsg) => {
-      numReactivo = evMsg.returnData ?? -1;
+      numReactivo = evMsg.returnData ?? NaN;
     });
   });
 </script>
