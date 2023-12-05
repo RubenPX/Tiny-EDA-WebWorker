@@ -29,6 +29,7 @@ export class WorkerManager extends EventBus {
 
 // eslint-disable-next-line no-undef
 if (self instanceof WorkerGlobalScope) {
-	const _ = new WorkerManager(self as unknown as Worker);
+	// eslint-disable-next-line no-new
+	new WorkerManager(self as unknown as Worker);
 	console.debug('Worker instanced');
 }
