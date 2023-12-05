@@ -2,13 +2,16 @@ import { CounterFeature } from '../Counter/CounterFeature';
 import { EventBus } from './Event/EventBus';
 import { EventError } from './Event/EventError';
 import { EventMessage } from './Event/EventMessage';
+import { ContextRoute } from './Routes/ContextRoute';
 
 export const clientRoutes = {
 	// @ts-expect-error This never will be initialized
 	Counter: new CounterFeature(undefined).getRoutes()
-};
+} as const;
 
 export class ClientWorkerManager extends EventBus {
+	protected routes?: { [key: string]: ContextRoute<any>; } | undefined;
+
 	constructor(worker: Worker) {
 		super(worker);
 		this.postMessageReturn({ context: 'root', method: 'initialize' }).then((ev) => {
@@ -28,10 +31,13 @@ export class ClientWorkerManager extends EventBus {
 				this.offMessage(evMsg);
 
 				// Check if has error
-				if (evMsg.error) throw new EventError(evMsg);
+				if (evMsg.error) {
+					reject(new EventError(evMsg));
+					throw new EventError(evMsg);
+				}
 
 				// Resolve with data
-				resolve(evMsg);
+				resolve({ ...evMsg });
 			});
 		});
 

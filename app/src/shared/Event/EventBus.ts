@@ -1,4 +1,5 @@
 import { ConsolePrefix } from '../ConsoleColors';
+import { ContextRoute } from '../Routes/ContextRoute';
 import { EventMessage } from './EventMessage';
 
 type EventMsgHandler<out, params> = {
@@ -7,6 +8,7 @@ type EventMsgHandler<out, params> = {
 }
 
 export abstract class EventBus {
+	protected abstract routes?: { [key: string]: ContextRoute<any> }
 	// eslint-disable-next-line no-undef
 	public isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
 
