@@ -2,13 +2,25 @@
   import worker from "@eda/app/src/shared/WorkerManager?worker";
   import {
     ClientWorkerManager,
-    clientRoutes,
     APIBuilder,
     APIRunner,
   } from "@eda/app/src/shared/Client/ClientWorkerManager";
-  import { onMount } from "svelte";
 
-  let app = new ClientWorkerManager(new worker());
+  let app = new ClientWorkerManager(new worker(), async (routes) => {
+    console.log({ routes });
+
+    // Getting first value
+    const builder = new APIBuilder(app.Routes.counter.GetCount, app);
+    const runner = new APIRunner(builder);
+    numReactivo = (await runner.run()) ?? -1;
+
+    // Example observer
+    const b2 = new APIBuilder(app.Routes.counter.SetCount, app);
+    const r2 = new APIRunner(b2);
+    r2.observe((evMsg) => {
+      numReactivo = evMsg.returnData ?? NaN;
+    });
+  });
 
   let num = NaN;
   let numReactivo = NaN;
@@ -18,38 +30,24 @@
   }
 
   async function runWithReturn() {
-    const builder = new APIBuilder(clientRoutes.Counter.SetCount, app);
+    const builder = new APIBuilder(app.Routes.counter.SetCount, app);
     const runner = new APIRunner(builder);
     num = (await runner.run(getRandomNumber())) ?? -1;
   }
 
   async function runWithSet() {
-    const builder = new APIBuilder(clientRoutes.Counter.SetCount, app);
+    const builder = new APIBuilder(app.Routes.counter.SetCount, app);
     const runner = new APIRunner(builder);
     await runner.run(getRandomNumber());
   }
 
   async function runError() {
-    const builder = new APIBuilder(clientRoutes.Counter.ErrorCount, app);
+    const builder = new APIBuilder(app.Routes.counter.ErrorCount, app);
     new APIRunner(builder)
       .run()
       .then(() => console.log("Oh oh"))
-      .catch(() => console.error("Yeah one error!!!"));
+      .catch((err) => console.error("Yeah one error!!!", { err: err.returnData.message }));
   }
-
-  onMount(async () => {
-    // Getting first value
-    const builder = new APIBuilder(clientRoutes.Counter.GetCount, app);
-    const runner = new APIRunner(builder);
-    numReactivo = (await runner.run()) ?? -1;
-
-    // Example observer
-    const b2 = new APIBuilder(clientRoutes.Counter.SetCount, app);
-    const r2 = new APIRunner(b2);
-    r2.observe((evMsg) => {
-      numReactivo = evMsg.returnData ?? NaN;
-    });
-  });
 </script>
 
 <main style="display: flex; width: 100%">

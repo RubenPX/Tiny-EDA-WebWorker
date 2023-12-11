@@ -1,6 +1,9 @@
-import { ConsolePrefix } from '../ConsoleColors';
-import { ContextRoute } from '../Routes/ContextRoute';
+import { ConsolePrefix } from '../Console/Formatters';
+import type { ContextRoute } from '../Routes/ContextRoute';
+import { EventError } from './EventError';
 import { EventMessage } from './EventMessage';
+import { Logger } from '../Console/Logger';
+import { isWorker } from '../utils/isWorker';
 
 type EventMsgHandler<out, params> = {
 	msgEvent: EventMessage<out, params>,
@@ -8,67 +11,96 @@ type EventMsgHandler<out, params> = {
 }
 
 export abstract class EventBus {
-	protected abstract routes?: { [key: string]: ContextRoute<any> }
-	// eslint-disable-next-line no-undef
-	public isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+protected abstract routes?: { [key: string]: ContextRoute<any> }
+// eslint-disable-next-line no-undef
+public isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
 
-	constructor(public manager: Worker) {
-		manager.addEventListener('message', (ev) => this.onWorkerMessage(ev));
-		manager.addEventListener('error', (ev) => this.onWorkerError(ev));
-		manager.addEventListener('messageerror', (ev) => this.onWorkerMessage(ev));
+constructor(public manager: Worker) {
+	manager.addEventListener('message', (ev) => this.onWorkerMessage(ev));
+	manager.addEventListener('error', (ev) => this.onWorkerError(ev));
+	manager.addEventListener('messageerror', (ev) => this.onWorkerMessage(ev));
+}
+
+private onWorkerMessage(ev: MessageEvent<any>) {
+	const msg = EventMessage.parseMessageEvent(ev);
+
+	if ((isWorker && Logger.verbose.worker.showIn) || (!isWorker && Logger.verbose.browser.showIn)) {
+		console.debug(...ConsolePrefix.reciveMsg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
 	}
 
-	private onWorkerMessage(ev: MessageEvent<any>) {
-		const msg = EventMessage.parseMessageEvent(ev);
-		if (msg.resolved && this.isWorker) return;
-		this.publish(msg);
+	this.publish(msg);
+}
+
+private onWorkerError(ev: ErrorEvent) {
+	const msg = EventMessage.parseErrorEvent(ev);
+
+	this.publish(msg);
+}
+
+public postMessage<rtnOut, eparams>(msg: EventMessage<rtnOut, eparams>, markAsResolved: boolean = false) {
+	if (msg.resolved) return;
+	if (markAsResolved) msg.resolved = true;
+
+	if ((isWorker && Logger.verbose.worker.showOut) || (!isWorker && Logger.verbose.browser.showOut)) {
+		console.debug(...ConsolePrefix.sendMsg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
 	}
 
-	private onWorkerError(ev: ErrorEvent) {
-		const msg = EventMessage.parseErrorEvent(ev);
-		if (msg.resolved && this.isWorker) return;
-		this.publish(msg);
+	this.manager.postMessage(msg);
+}
+
+protected handlers: EventMsgHandler<any, any>[] = [];
+
+public publish<rtnOut, eparams>(evMsg: EventMessage<rtnOut, eparams>) {
+	const findMethods = this.handlers.filter(h => h.msgEvent.context === evMsg.context && h.msgEvent.method === evMsg.method);
+	if (findMethods.length !== 0) {
+		findMethods.forEach(async handler => {
+			try {
+				evMsg.returnData = await handler.clbk(evMsg) as rtnOut;
+				this.postMessage(evMsg, true);
+			} catch (error) {
+				evMsg.error = true;
+				evMsg.returnData = error as rtnOut;
+				this.postMessage(evMsg, true);
+			}
+		});
+	} else {
+		if (evMsg.resolved) return; // Stop if route is not found
+		evMsg.error = true;
+		evMsg.returnData = new Error('Route not found') as rtnOut;
+		this.postMessage(evMsg, true);
 	}
+}
 
-	public postMessage<rtnOut, eparams>(msg: EventMessage<rtnOut, eparams>) {
-		if (msg.resolved) return;
+public offMessage(eventMsg: EventMessage<any, any>): void {
+	this.handlers = this.handlers.filter(h => h.msgEvent.id !== eventMsg.id);
+	console.debug(...ConsolePrefix.ObserverUnRegister, eventMsg.id);
+}
 
-		// If request is resolved as webworker, event is marked as resolved
-		if (this.isWorker) msg.resolved = true;
+protected onMessage<rtnOut, eparams>(context: string, method: string, clbk: (msg: EventMessage<rtnOut, eparams>) => void) {
+	const newMessage = new EventMessage(context, method);
+	this.handlers.push({ msgEvent: newMessage, clbk });
+	console.debug(...ConsolePrefix.ObserverRegister, newMessage.id, { context, method });
+	return newMessage as EventMessage<rtnOut, eparams>;
+}
 
-		console.debug(...ConsolePrefix.Msg, { id: { id: msg.id }, context: msg.context, method: msg.method, returnData: msg.returnData });
-		this.manager.postMessage(msg);
-	}
+public postClientReturn<returnType, paramsType>(context: string, method: string, params?: paramsType): Promise<EventMessage<returnType, paramsType>> {
+	const msg = new EventMessage<returnType, paramsType>(context, method, params);
 
-	private handlers: EventMsgHandler<any, any>[] = [];
+	const prom = new Promise<EventMessage<returnType, paramsType>>((resolve, reject) => {
+		this.onMessage<returnType, paramsType>(msg.context, msg.method, (evMsg) => {
+			if (msg.id !== evMsg.id) return;
 
-	public publish<rtnOut, eparams>(evMsg: EventMessage<rtnOut, eparams>) {
-		const findMethods = this.handlers.filter(h => h.msgEvent.context === evMsg.context && h.msgEvent.method === evMsg.method);
-		if (findMethods.length !== 0) {
-			findMethods.forEach(async handler => {
-				try {
-					evMsg.returnData = await handler.clbk(evMsg) as rtnOut;
-					this.postMessage(evMsg);
-				} catch (error) {
-					evMsg.error = true;
-					evMsg.returnData = error as rtnOut;
-					this.postMessage(evMsg);
-				}
-			});
-		} else {
-			evMsg.error = true;
-			evMsg.returnData = new Error('Route not found') as rtnOut;
-			this.postMessage(evMsg);
-		}
-	}
+			if (msg.error) reject(new EventError(evMsg));
+			else resolve(evMsg);
 
-	public offMessage(eventMsg: EventMessage<any, any>): void {
-		this.handlers = this.handlers.filter(h => h.msgEvent.id !== eventMsg.id);
-	}
+			this.offMessage(msg);
 
-	protected onMessage<rtnOut, eparams>(context: string, method: string, clbk: (msg: EventMessage<rtnOut, eparams>) => void) {
-		const newMessage = new EventMessage(context, method);
-		this.handlers.push({ msgEvent: newMessage, clbk });
-		return newMessage as EventMessage<rtnOut, eparams>;
-	}
+			if (evMsg.error) throw new EventError(evMsg);
+		});
+	});
+
+	this.postMessage(msg);
+
+	return prom;
+}
 }

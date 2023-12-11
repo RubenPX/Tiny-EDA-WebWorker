@@ -1,6 +1,5 @@
-import { ClientWorkerManager } from './ClientWorkerManager';
+import type { ClientWorkerManager } from './ClientWorkerManager';
 
-// eslint-disable-next-line no-unused-vars
 export type ClientRouteDefinition<returnType, paramsType> = { context: string, method: string, params?: paramsType }
 
 export class APIBuilder<returnType, paramsType> {
@@ -8,8 +7,8 @@ export class APIBuilder<returnType, paramsType> {
 	private sorter: ((a: any, b: any) => -1 | 0 | 1) | null = null;
 
 	constructor(
-		public readonly route: ClientRouteDefinition<returnType, paramsType>,
-		public readonly client: ClientWorkerManager
+        public readonly route: ClientRouteDefinition<returnType, paramsType>,
+        public readonly client: ClientWorkerManager
 	) {}
 
 	setFilter(filterName: string, filterFunction: (objeto: any) => boolean) {
