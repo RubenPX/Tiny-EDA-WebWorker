@@ -52,9 +52,50 @@ stateDiagram-v2
     }
 ```
 
+## Conceptos de esta plantilla
+
+Esta plantilla diseñé un concepto que se basa en algunas ya hechas, pero con un algunos cambios. En este caso voy a expoer de como crear un handler para procesar un evento
+
+La idea es sencilla de entender
+
+El worker intercepta el mensaje, y busca un contexto. Una vez se haya encontrado un contexto, envia el mensaje al worker para que procese el metodo.
+
+```mermaid
+stateDiagram-v2
+direction LR
+
+[*] --> worker
+worker --> context
+context --> method
+method --> [*]
+```
+
+Todo empieza en la [inicialización del worker](readme.md) (Aqui se instancia las bases de datos y los contextos).
+
+- Un worker es un [EventBus](./app//src/shared/Routes/EventBus.ts#)
+- Un contexto es una lista de [metodos](./app/src/shared/Routes/ContextRoute.ts#)
+- Un metodo es un [runner](./app/src/shared/Routes/EventRunner.ts#) que ejecuta una [acción](./app/src/shared/Routes/EventRunner.ts#L9-L13)
+
+Una vez se recibe un evento, el worker lo transforma a un evento de dominio y busca el contexto mencionado en el mensaje. Una vez se ha encontrado el contexto, se delega el mensaje a el contexto. Ahí, el contexto, busca el metodo que requiere y lo delega a un runner que es el que se encarga de procesar la solicitud del mensaje
+
 ## Roadmap
 
 - [X] Enviar y recibir eventos entre el worker y el browser
 - [X] Permitir la observación de eventos
 - [X] Controlar los errores de la aplicación
-- [X] logs mejorados en consola (Para ver los eventos, requiere que tengas verbose activado)
+- [X] logs mejorados en consola (Para ver los eventos, requiere que tengas verbose activado en las devtools)
+
+## Roadmap (Técnicas usadas)
+
+La idea de este proyecto ha surgido de una necesidad en el trabajo. Organizar Código y optimizar la aplicación
+
+Primero lo que pensé es en crear algo usando las técnicas de [arquitectura hexagonal](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
+
+después explorando y haciendo pruebas, me di cuenta que era algo tedioso que ir moviéndose a diferentes niveles de carpetas, así que descubrí la técnica "[Vertical Slice](https://blog.ndepend.com/vertical-slice-architecture-in-asp-net-core/)" que se aplica en arquitectura hexagonal
+
+Mas tarde, decidí usar una tecnología que usan los navegadores que se llama [Web Workers Api](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) según una web muy relevante en el mundo del frontend, [es compatible con el 98% de los navegadores](https://caniuse.com/webworkers). En resumen, consiste en dejar todo el trabajo de procesamiento separado en un hilo diferente. Es algo costoso al principio, pero vale la pena para mejorar la experiencia de usuario y evitar que la aplicación tengo micro cuelgues
+
+Por último, para hacer que este trabajo sea totalmente agnóstico a cualquier framework web que se use, decidi convertir el proyecto en una librería
+
+
+
