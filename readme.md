@@ -1,12 +1,9 @@
 # Tiny WebWorker Event Driven Architecture
 
-[![wakatime](https://wakatime.com/badge/user/3ea03d5e-dec1-4bb5-a47d-7e8b1813388b/project/018bd4f5-a300-4078-8ede-68ffb2a17c5c.svg)](https://wakatime.com/@RubenPX/projects/lollcpagon)
+> Tiempo invertido en esta plantilla  
+> [![wakatime](https://wakatime.com/badge/user/3ea03d5e-dec1-4bb5-a47d-7e8b1813388b/project/018bd4f5-a300-4078-8ede-68ffb2a17c5c.svg)](https://wakatime.com/@RubenPX/projects/lollcpagon)
 
 La idea de este proyecto es crear un proyecto base donde se use una arquitectura basada en eventos para usarlo con WebWorker
-
-## Opinión
-
-Esta estructura de carpetas es una forma opinionada de como creo yo @RubenPX de cuál es la forma que mejor me parece a la hora de estructurar las carpetas y el estilo de código.
 
 ## ¿Porque pensar como una libreria a parte y no como una aplicación única?
 
@@ -97,5 +94,6 @@ Mas tarde, decidí usar una tecnología que usan los navegadores que se llama [W
 
 Por último, para hacer que este trabajo sea totalmente agnóstico a cualquier framework web que se use, decidi convertir el proyecto en una librería
 
+## Opinión
 
-
+Esta estructura de carpetas es una forma opinionada de como creo yo @RubenPX de cuál es la forma que mejor me parece a la hora de estructurar las carpetas y el estilo de código.
