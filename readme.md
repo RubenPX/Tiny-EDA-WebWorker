@@ -7,7 +7,9 @@ La idea de este proyecto es crear un proyecto base donde se use una arquitectura
 
 ## ¿Porque pensar como una libreria a parte y no como una aplicación única?
 
-En realidad, la presentación (Frontend) es una aplicación que ejecuta la librería, así que en este caso, es facil ejecutar los métodos que nos interesa.
+La ventaja de hacer una libreria, es que es totalmente agnostico al framework que se use. ya sea react, vanillajs, svelte, angular, etc... Esta libreria ofrece libertad para usarse.
+
+La carpeta frontend es la aplicación, y la carpeta app es una libreria. El proyecto que estas viendo en un mono-repositorio
 
 Para que sea fácil para otros desarrolladores, he decidido usar el patrón de código Factory para construir las request. [(Aqui un ejemplo)](https://github.com/RubenPX/Tiny-EDA-WebWorker/blob/bcbc6e05abb469fc00357a879d5db530c524ec42/frontend/src/App.svelte#L12-L15) Esto tiene varias ventajas al respecto, siendo la más importante que el desarrollador no tenga que preocuparse de cómo tiene hablar entre el navegador y el webworker. Toda la libreria esta realizada de modo se puedan recibir eventos (tanto de resultados como de errores)
 
