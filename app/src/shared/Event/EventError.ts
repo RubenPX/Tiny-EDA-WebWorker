@@ -1,4 +1,4 @@
-import { EventMessage } from './EventMessage';
+import type { EventMessage } from './EventMessage';
 
 export class EventError<eParams = any> extends Error {
 	public eventMessage: EventMessage<string, eParams>;

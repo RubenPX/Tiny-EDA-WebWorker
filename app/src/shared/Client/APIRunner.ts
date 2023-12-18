@@ -1,5 +1,6 @@
-import { APIBuilder } from './APIBuilder';
-import { EventMessage } from '../Event/EventMessage';
+import { APIBuilder, type ClientRouteDefinition } from './APIBuilder';
+import type { ClientWorkerManager } from './ClientWorkerManager';
+import type { EventMessage } from '../Event/EventMessage';
 
 export class APIRunner<returnType, paramsType> {
 	constructor(private builder: APIBuilder<returnType, paramsType>) {}
@@ -19,5 +20,13 @@ export class APIRunner<returnType, paramsType> {
 			params
 		});
 		return event.returnData as returnType | undefined;
+	}
+
+	public static instanceBasic<returnType, paramsType>(
+		client: ClientWorkerManager,
+		route: ClientRouteDefinition<returnType, paramsType>
+	): APIRunner<returnType, paramsType> {
+		const builder = new APIBuilder(route, client);
+		return new APIRunner(builder);
 	}
 }

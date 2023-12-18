@@ -7,7 +7,7 @@ import { SetCount } from './app/SetCount';
 import type { ConterRepository } from './domain/ConterRepository';
 
 export class CounterFeature extends ContextRoute<ConterRepository> {
-	protected contextName: string = 'Counter';
+	public contextName: string = 'Counter';
 
 	public EventRoutes = {
 		GetCount   : GetCount(this.repos),
