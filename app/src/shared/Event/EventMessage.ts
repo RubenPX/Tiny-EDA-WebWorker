@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { v4 } from 'uuid';
 
 export class EventMessage<out, eparams> {
@@ -8,11 +9,12 @@ export class EventMessage<out, eparams> {
 	public resolved: boolean = false;
 
 	constructor(
-		public context: string,
-		public method: string,
-		public params?: eparams
+        public context: string,
+        public method: string,
+        public params?: eparams
 	) {}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public static parseMessageEvent<rtnOut, prms>(ev: MessageEvent<any>): EventMessage<rtnOut, prms> {
 		const { id, context, method, params, ...rest } = ev.data;
 		if (context && method) {

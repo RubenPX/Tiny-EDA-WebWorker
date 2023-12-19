@@ -1,6 +1,7 @@
 import type { ClientWorkerManager } from './ClientWorkerManager';
 
-export type ClientRouteDefinition<returnType, paramsType> = { context: string, method: string, params?: paramsType }
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+export type ClientRouteDefinition<_returnType, paramsType> = { context: string, method: string, params?: paramsType }
 
 export class APIBuilder<returnType, paramsType> {
 	private filters: { [key: string]: (objeto: any) => boolean } = {};

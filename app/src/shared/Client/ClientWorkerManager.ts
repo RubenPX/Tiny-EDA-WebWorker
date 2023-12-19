@@ -1,71 +1,60 @@
+import { ConsoleFormatter } from '../Console/Formatters';
 import type { ContextRoute } from '../Routes/ContextRoute';
-import { EventBus } from '../Event/EventBus';
-import { EventError } from '../Event/EventError';
-import { EventMessage } from '../Event/EventMessage';
+import { EventBus } from '../Routes/EventBus';
 
-import { APIBuilder } from './ClientWorkerManager';
-import type { ClientRouteDefinition } from './APIBuilder';
-import { ConsolePrefix } from '../Console/Formatters';
+import { APIBuilder, type ClientRouteDefinition } from './APIBuilder';
 import type { clientRoutesType } from '../WorkerManager';
 
-export * from './APIBuilder';
-export * from './APIRunner';
+import { CounterFeature } from '../../Counter/CounterFeature';
 
 export class ClientWorkerManager extends EventBus {
-	protected routes?: { [key: string]: ContextRoute<any>; } | undefined;
+	protected routes: { [key: string]: ContextRoute<any>; };
 
 	public Routes!: clientRoutesType;
 
+	public initialized = false;
+
 	constructor(worker: Worker, initializedEvent?: (routes: clientRoutesType) => void) {
 		super(worker);
-		console.groupCollapsed('Worker initializer');
 
-		this.onMessage<clientRoutesType, undefined>('root', 'initialized', (evMsg) => {
+		console.groupCollapsed('Worker init');
+
+		console.groupCollapsed('Client Initialize routes');
+		this.routes = {
+			counter: new CounterFeature()
+		};
+
+		for (const ctx of Object.values(this.routes)) {
+			for (const [mtd] of Object.entries(ctx.EventRoutes)) {
+				console.debug(...ConsoleFormatter.info('routeRegister', { context: ctx.contextName, method: mtd }));
+			}
+		}
+		console.groupEnd();
+
+		this.observe({ context: 'root', method: 'initialized' }, (evMsg) => {
 			if (evMsg.returnData) this.Routes = evMsg.returnData;
 			console.groupEnd();
+			this.initialized = true;
 			initializedEvent && initializedEvent(evMsg.returnData!);
 		});
-	}
-
-	public postMessageReturn<rtnOut, eparams>(evMsg: { context: string, method: string, params?: eparams }) {
-		const newEvent = new EventMessage(evMsg.context, evMsg.method, evMsg.params);
-
-		const prom = new Promise((resolve, reject) => {
-			const onMsgHandler = (evMsg: EventMessage<any, any>, evMsgUn: EventMessage<any, any>) => {
-				// Skip if id is not same as new event
-				if (evMsg.id !== newEvent.id) return;
-
-				// Unsuscribe
-				this.offMessage(evMsgUn);
-
-				// Check if has error
-				if (evMsg.error) reject(evMsg);
-				else resolve({ ...evMsg });
-
-				// if has error, throw it
-				if (evMsg.error) throw new EventError(evMsg);
-			};
-
-			const evmsg: EventMessage<any, any> = this.onMessage(newEvent.context, newEvent.method, ev => onMsgHandler(ev, evmsg));
-		});
-
-		this.postMessage(newEvent);
-
-		return prom as Promise<EventMessage<rtnOut, eparams>>;
 	}
 
 	public instanceBuilder<returnType, paramsType>(route: ClientRouteDefinition<returnType, paramsType>) {
 		return new APIBuilder(route, this);
 	}
 
-	public observe<rtnOut, eparams>(route: { context: string, method: string, params?: eparams }, clbk: EventBus['handlers'][number]['clbk']) {
-		return this.onMessage<rtnOut, eparams>(route.context, route.method, clbk);
+	private delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+	public async waitInitialize() {
+		while (!this.initialized) {
+			console.log('Initializing...');
+			await this.delay(100);
+		}
 	}
 
-	public onMessage<rtnOut, eparams>(context: string, method: string, clbk: (msg: EventMessage<rtnOut, eparams>) => void) {
-		const newMessage = new EventMessage(context, method);
-		this.handlers.push({ msgEvent: newMessage, clbk });
-		console.debug(...ConsolePrefix.ObserverRegister, { context, method });
-		return newMessage as EventMessage<rtnOut, eparams>;
+	// eslint-disable-next-line no-use-before-define
+	public static instance?: ClientWorkerManager;
+	public static getInstance(worker: Worker) {
+		if (this.instance == null) this.instance = new ClientWorkerManager(worker);
+		return this.instance;
 	}
 }

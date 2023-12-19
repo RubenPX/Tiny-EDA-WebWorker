@@ -6,20 +6,30 @@ export class APIRunner<returnType, paramsType> {
 	constructor(private builder: APIBuilder<returnType, paramsType>) {}
 
 	observe(callback: (data: EventMessage<returnType, paramsType>) => void) {
-		this.builder.client.observe({
+		const evMsg = this.builder.client.observe({
 			context : this.builder.route.context,
 			method  : this.builder.route.method,
 			params  : this.builder.route.params
 		}, callback);
+
+		return {
+			postEvent      : (params: paramsType) => this.postObserveMessage(evMsg, params),
+			removeObserver : () => this.builder.client.offMessage(evMsg)
+		};
 	}
 
-	async run(params?: paramsType): Promise<returnType | undefined> {
-		const event = await this.builder.client.postMessageReturn({
-			context : this.builder.route.context,
-			method  : this.builder.route.method,
+	private async postObserveMessage<returnType, paramsType>(evMsg: EventMessage<returnType, paramsType>, params: paramsType) {
+		evMsg.params = params;
+		this.builder.client.postMessage(evMsg);
+	}
+
+	async run(params: paramsType): Promise<returnType> {
+		const event = await this.builder.client.postReturn(
+			this.builder.route.context,
+			this.builder.route.method,
 			params
-		});
-		return event.returnData as returnType | undefined;
+		);
+		return event.returnData as returnType;
 	}
 
 	public static instanceBasic<returnType, paramsType>(
