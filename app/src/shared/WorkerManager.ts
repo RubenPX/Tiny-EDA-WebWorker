@@ -53,12 +53,7 @@ export class WorkerManager extends EventBus {
 
 		Object.entries(this.routes).forEach(([_, ctx]) => {
 			Object.entries(ctx.EventRoutes).forEach(([methodName, _]) => {
-				console.debug(
-					...ConsoleFormatter.info('routeRegister', {
-						context : ctx.contextName,
-						method  : methodName
-					})
-				);
+				console.debug(...ConsoleFormatter.info('routeRegister', { context: ctx.contextName, method: methodName }));
 			});
 		});
 		console.groupEnd();
