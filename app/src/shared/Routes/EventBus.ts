@@ -111,7 +111,6 @@ export abstract class EventBus {
 
 			const prom = new Promise<EventMessage<returnType, paramsType>>((resolve, reject) => {
 				this.onMessage<returnType, paramsType>(msg, (evMsg) => {
-					console.log(msg);
 					if (msg.id !== evMsg.id) return;
 
 					if (evMsg.error) reject(evMsg.returnData);

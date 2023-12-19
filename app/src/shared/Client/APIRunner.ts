@@ -13,7 +13,7 @@ export class APIRunner<returnType, paramsType> {
 		}, callback);
 
 		return {
-			postEvent      : (params: paramsType) => this.postObserveMessage(evMsg, params),
+			postEvent      : (params?: paramsType) => this.postObserveMessage(evMsg, params),
 			removeObserver : () => this.builder.client.offMessage(evMsg)
 		};
 	}
@@ -23,7 +23,7 @@ export class APIRunner<returnType, paramsType> {
 		this.builder.client.postMessage(evMsg);
 	}
 
-	async run(params: paramsType): Promise<returnType> {
+	async run(params?: paramsType): Promise<returnType> {
 		const event = await this.builder.client.postReturn(
 			this.builder.route.context,
 			this.builder.route.method,

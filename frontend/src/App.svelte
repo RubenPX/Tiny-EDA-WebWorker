@@ -1,25 +1,22 @@
 <script lang="ts">
   import worker from "@eda/app/src/shared/WorkerManager?worker";
-  import {
-    ClientWorkerManager,
-    APIBuilder,
-    APIRunner,
-  } from "@eda/app/src/shared/Client/ClientWorkerManager";
+  import { ClientWorkerManager } from "@eda/app/src/shared/Client/ClientWorkerManager";
+  import { APIBuilder } from "@eda/app/src/shared/Client/APIBuilder";
+  import { APIRunner } from "@eda/app/src/shared/Client/APIRunner";
 
   let app = new ClientWorkerManager(new worker(), async (routes) => {
     console.log({ routes });
 
     // Getting first value
-    const builder = new APIBuilder(app.Routes.counter.GetCount, app);
-    const runner = new APIRunner(builder);
+    let runner = APIRunner.instanceBasic(app, app.Routes.CounterFeature.GetCount);
     numReactivo = (await runner.run()) ?? -1;
 
     // Example observer
-    const b2 = new APIBuilder(app.Routes.counter.SetCount, app);
-    const r2 = new APIRunner(b2);
-    r2.observe((evMsg) => {
-      numReactivo = evMsg.returnData ?? NaN;
-    });
+    APIRunner.instanceBasic(app, app.Routes.CounterFeature.SetCount).observe(
+      (evMsg) => {
+        numReactivo = evMsg.returnData ?? NaN;
+      }
+    );
   });
 
   let num = NaN;
@@ -30,23 +27,23 @@
   }
 
   async function runWithReturn() {
-    const builder = new APIBuilder(app.Routes.counter.SetCount, app);
+    const builder = new APIBuilder(app.Routes.CounterFeature.SetCount, app);
     const runner = new APIRunner(builder);
     num = (await runner.run(getRandomNumber())) ?? -1;
   }
 
   async function runWithSet() {
-    const builder = new APIBuilder(app.Routes.counter.SetCount, app);
+    const builder = new APIBuilder(app.Routes.CounterFeature.SetCount, app);
     const runner = new APIRunner(builder);
     await runner.run(getRandomNumber());
   }
 
   async function runError() {
-    const builder = new APIBuilder(app.Routes.counter.ErrorCount, app);
+    const builder = new APIBuilder(app.Routes.CounterFeature.ErrorCount, app);
     new APIRunner(builder)
       .run()
       .then(() => console.log("Oh oh"))
-      .catch((err) => console.error("Yeah one error!!!", { err: err.returnData.message }));
+      .catch((err) => console.error("Yeah one error!!!", err));
   }
 </script>
 
