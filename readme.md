@@ -11,7 +11,7 @@ La ventaja de hacer una libreria, es que es totalmente agnostico al framework qu
 
 La carpeta frontend es la aplicación, y la carpeta app es una libreria. El proyecto que estas viendo en un mono-repositorio
 
-Para que sea fácil para otros desarrolladores, he decidido usar el patrón de código Factory para construir las request. [(Aqui un ejemplo)](https://github.com/RubenPX/Tiny-EDA-WebWorker/blob/bcbc6e05abb469fc00357a879d5db530c524ec42/frontend/src/App.svelte#L12-L15) Esto tiene varias ventajas al respecto, siendo la más importante que el desarrollador no tenga que preocuparse de cómo tiene hablar entre el navegador y el webworker. Toda la libreria esta realizada de modo se puedan recibir eventos (tanto de resultados como de errores)
+Para que sea fácil para otros desarrolladores, he decidido usar el patrón de código Factory para construir las request. [(Aqui un ejemplo)](https://github.com/RubenPX/Tiny-EDA-WebWorker/blob/72f26dbe01f743b3c5a8e05aa82494ee142edc39/frontend/src/App.svelte#L10-L12) Esto tiene varias ventajas al respecto, siendo la más importante que el desarrollador no tenga que preocuparse de cómo tiene hablar entre el navegador y el webworker. Toda la libreria esta realizada de modo se puedan recibir eventos (tanto de resultados como de errores)
 
 ## Estructura de proyecto
 
