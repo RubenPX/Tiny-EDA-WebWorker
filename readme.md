@@ -81,8 +81,10 @@ Una vez se [recibe un evento](https://github.com/RubenPX/Tiny-EDA-WebWorker/blob
 
 - [X] Enviar y recibir eventos entre el worker y el browser
 - [X] Permitir la observación de eventos
-- [X] Controlar los errores de la aplicación
+- [X] El control de errores, en consola, te referencia exactamente donde ha fallado el webworker en vez de mostrar un error generico
 - [X] logs mejorados en consola (Para ver los eventos, requiere que tengas verbose activado en las devtools)
+- [X] Auto completado de rutas usando typescript
+- [X] A la hora de navegar código, con el ctrl + click te lleva a el metodo que lo ejecuta sin que vaya a las clases abstractas
 
 ## Roadmap (Técnicas usadas)
 
