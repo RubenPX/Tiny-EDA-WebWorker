@@ -93,8 +93,6 @@ después explorando y haciendo pruebas, me di cuenta que era algo tedioso que ir
 
 Mas tarde, decidí usar una tecnología que usan los navegadores que se llama [Web Workers Api](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) según una web muy relevante en el mundo del frontend, [es compatible con el 98% de los navegadores](https://caniuse.com/webworkers). En resumen, consiste en dejar todo el trabajo de procesamiento separado en un hilo diferente. Es algo costoso al principio, pero vale la pena para mejorar la experiencia de usuario y evitar que la aplicación tengo micro cuelgues
 
-Por último, para hacer que este trabajo sea totalmente agnóstico a cualquier framework web que se use, decidi convertir el proyecto en una librería
-
 ## Opinión
 
 Esta estructura de carpetas es una forma opinionada de como creo yo @RubenPX de cuál es la forma que mejor me parece a la hora de estructurar las carpetas y el estilo de código.
