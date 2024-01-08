@@ -1,3 +1,7 @@
+> [!note]
+> Este proyecto, esta archivado, y se continua desarrollando [aqui](https://github.com/RubenPX/edaw)   
+> Esto debido a que se ha convertido el proyecto mas profundamente en una libreria
+
 # Tiny WebWorker Event Driven Architecture
 
 La idea de este proyecto es crear un proyecto base donde se use una arquitectura basada en eventos para usarlo con WebWorker
